@@ -1,15 +1,21 @@
 Type: Package
 Package: piamenv
 Title: Package environment support for PIAM
-Version: 0.0.1
+Version: 0.1.0
 Date: 2022-11-10
 Authors@R:
     person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = c("aut", "cre"))
 Description: Enables easier management of package environments, based on renv and Python venv.
 License: LGPL-3
 URL: https://github.com/pik-piam/piamenv
+Imports:
+    callr,
+    desc,
+    methods,
+    renv
 Suggests:
     covr,
+    lucode2,
     testthat
 Encoding: UTF-8
 RoxygenNote: 7.2.1
