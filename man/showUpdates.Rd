@@ -4,11 +4,10 @@
 \alias{showUpdates}
 \title{showUpdates}
 \usage{
-showUpdates(packages = NULL)
+showUpdates(packages = piamPackages())
 }
 \arguments{
-\item{packages}{A character vector of package names. By default the result of
-lucode2::pikPiamPackages() if lucode2 is available, otherwise must be passed explicitly.}
+\item{packages}{A character vector of package names.}
 }
 \value{
 Invisibly, a data.frame as returned by utils::old.packages

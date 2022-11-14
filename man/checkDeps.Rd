@@ -7,8 +7,7 @@
 checkDeps(
   descriptionFile = ".",
   dependencyTypes = c("Depends", "Imports", "LinkingTo"),
-  action = "stop",
-  getLine = readline()
+  action = "stop"
 )
 }
 \arguments{
@@ -25,8 +24,6 @@ subset of \code{c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")}.}
 \item \code{"pass"}:  Do nothing, just return invisibly.
 \item \code{"ask"}: Ask the user whether to auto-fix missing dependencies. Requires an active renv.
 }}
-
-\item{getLine}{A function to get user input.}
 }
 \value{
 Invisibly, a named list of strings indicating whether each package

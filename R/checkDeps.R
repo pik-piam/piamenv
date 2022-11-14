@@ -12,7 +12,6 @@
 #'   - `"warn"`:  Issue a warning with the unmet dependencies.
 #'   - `"pass"`:  Do nothing, just return invisibly.
 #'   - `"ask"`: Ask the user whether to auto-fix missing dependencies. Requires an active renv.
-#' @param getLine A function to get user input.
 #' @return Invisibly, a named list of strings indicating whether each package
 #'   requirement is met (`"TRUE"`) or not, in which case the reason is stated.
 #'
@@ -24,7 +23,7 @@
 #' @export
 checkDeps <- function(descriptionFile = ".",
                       dependencyTypes = c("Depends", "Imports", "LinkingTo"),
-                      action = "stop", getLine = readline()) {
+                      action = "stop") {
   stopifnot(all(dependencyTypes %in% c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")))
   stopifnot(action %in% c("stop", "warn", "pass", "ask"))
   allDeps <- desc::desc_get_deps(descriptionFile)
