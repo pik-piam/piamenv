@@ -13,8 +13,11 @@ archiveRenv <- function() {
   archivePath <- file.path(normalizePath(renv::project()), "renv", "archive", paste0(datetime, "_renv.lock"))
 
   dir.create(dirname(archivePath), recursive = TRUE, showWarnings = FALSE)
-  renv::snapshot(lockfile = archivePath, prompt = FALSE)
-
-  message("created ", archivePath)
+  utils::capture.output({
+    utils::capture.output({
+      renv::snapshot(lockfile = archivePath, prompt = FALSE)
+    }, type = "message")
+  })
+  message("Lockfile written to ", archivePath)
   return(invisible(archivePath))
 }
