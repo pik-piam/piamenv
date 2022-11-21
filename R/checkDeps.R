@@ -44,8 +44,8 @@ checkDeps <- function(descriptionFile = ".",
         renv::install(renvInstall, prompt = FALSE)
         renv::snapshot(prompt = FALSE)
         # after installing, check again in new R session to avoid using already loaded packages
-        return(callr::r(function(...) piamenv::checkDeps(...),
-                        list(descriptionFile, dependencyTypes, action = "stop")))
+        return(invisible(callr::r(function(...) piamenv::checkDeps(...),
+                                  list(descriptionFile, dependencyTypes, action = "stop"))))
       }
     } else if (action %in% c("stop", "ask")) {
       stop(msg)
