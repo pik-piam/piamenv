@@ -6,6 +6,9 @@
 \usage{
 updateRenv()
 }
+\value{
+Invisibly, the return value of renv::update.
+}
 \description{
 Update all PIK-PIAM packages in the current renv, write renv.lock into archive.
 }
