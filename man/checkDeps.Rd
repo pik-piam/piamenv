@@ -21,8 +21,8 @@ subset of \code{c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")}.}
 \itemize{
 \item \code{"stop"}:  Issue an error with the unmet dependencies.  (Default.)
 \item \code{"warn"}:  Issue a warning with the unmet dependencies.
+\item \code{"note"}:  Issue a message with the unmet dependencies.
 \item \code{"pass"}:  Do nothing, just return invisibly.
-\item \code{"ask"}: Ask the user whether to auto-fix missing dependencies. Requires an active renv.
 }}
 }
 \value{

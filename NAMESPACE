@@ -2,6 +2,8 @@
 
 export(archiveRenv)
 export(checkDeps)
+export(fixDeps)
 export(restoreRenv)
 export(showUpdates)
+export(stopIfLoaded)
 export(updateRenv)

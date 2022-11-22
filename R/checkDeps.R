@@ -10,6 +10,7 @@
 #' @param action Action to take on unmet dependencies:
 #'   - `"stop"`:  Issue an error with the unmet dependencies.  (Default.)
 #'   - `"warn"`:  Issue a warning with the unmet dependencies.
+#'   - `"note"`:  Issue a message with the unmet dependencies.
 #'   - `"pass"`:  Do nothing, just return invisibly.
 #' @return Invisibly, a named list of strings indicating whether each package
 #'   requirement is met (`"TRUE"`) or not, in which case the reason is stated.
@@ -24,7 +25,7 @@ checkDeps <- function(descriptionFile = ".",
                       dependencyTypes = c("Depends", "Imports", "LinkingTo"),
                       action = "stop") {
   stopifnot(all(dependencyTypes %in% c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")))
-  stopifnot(action %in% c("stop", "warn", "pass"))
+  stopifnot(action %in% c("stop", "warn", "note", "pass"))
   allDeps <- desc::desc_get_deps(descriptionFile)
   deps <- allDeps[allDeps$type %in% dependencyTypes, ]
   requirementMet <- Map(checkRequirement, package = deps$package, version = deps$version)
@@ -35,6 +36,8 @@ checkDeps <- function(descriptionFile = ".",
       stop(msg)
     } else if (action == "warn") {
       warning(msg)
+    } else if (action == "note") {
+      message(msg)
     }
   }
 
