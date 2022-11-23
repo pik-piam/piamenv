@@ -8,12 +8,12 @@
 #' @param dependencyTypes The types of dependencies to check. Must be a
 #' subset of `c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")`.
 #' @param action Action to take on unmet dependencies:
-#'   - `"stop"`: Issue an error with the unmet dependencies.  (Default.)
+#'   - `"stop"`: Issue an error with the unmet dependencies. (Default.)
 #'   - `"warn"`: Issue a warning with the unmet dependencies.
 #'   - `"note"`: Issue a message with the unmet dependencies.
 #'   - `"pass"`: Do nothing, just return invisibly.
 #'   - `"ask"`: Ask the user whether to auto-fix missing dependencies. Requires an active renv.
-#' Will also write renv.lock
+#'              Will also write renv.lock
 #' @return Invisibly, a named list of strings indicating whether each package
 #'   requirement is met (`"TRUE"`) or not, in which case the reason is stated.
 #'

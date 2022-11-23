@@ -19,7 +19,7 @@ subset of \code{c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")}.}
 
 \item{action}{Action to take on unmet dependencies:
 \itemize{
-\item \code{"stop"}: Issue an error with the unmet dependencies.  (Default.)
+\item \code{"stop"}: Issue an error with the unmet dependencies. (Default.)
 \item \code{"warn"}: Issue a warning with the unmet dependencies.
 \item \code{"note"}: Issue a message with the unmet dependencies.
 \item \code{"pass"}: Do nothing, just return invisibly.
