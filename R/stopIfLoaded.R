@@ -8,7 +8,7 @@
 #' @param updatedPackage One or more names of packages that were just updated.
 #'
 #' @author Pascal Führlich
-#' @example
+#' @examples
 #' \dontrun{
 #' updates <- piamenv::fixDeps()
 #' piamenv::stopIfLoaded(names(updates))

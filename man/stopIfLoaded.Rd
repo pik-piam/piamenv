@@ -16,6 +16,16 @@ Throw an error if any of the given packages is loaded.
 This is useful after updating packages. If any of the updated packages was loaded before
 the update R might crash when trying to lazy load a function from the updated package.
 }
+\examples{
+\dontrun{
+updates <- piamenv::fixDeps()
+piamenv::stopIfLoaded(names(updates))
+
+updates <- piamenv::updateRenv()
+piamenv::stopIfLoaded(names(updates))
+}
+
+}
 \author{
 Pascal Führlich
 }
