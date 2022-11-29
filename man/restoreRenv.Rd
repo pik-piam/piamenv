@@ -5,12 +5,15 @@
 \title{restoreRenv}
 \usage{
 restoreRenv(
-  lockfile = Sys.glob(c("output/*/renv.lock", "renv/archive/*renv.lock"))
+  lockfile = Sys.glob(c("output/*/*renv.lock", "renv/archive/*renv.lock"))
 )
 }
 \arguments{
 \item{lockfile}{One or more paths to lockfiles. The default value assumes an output folder with
-run folders containing a renv.lock file each, and/or an renv/archive folder with renv.lock files.}
+run folders containing renv.lock files, and/or an renv/archive folder with renv.lock files.}
+}
+\value{
+Invisibly, the return value of renv::restore.
 }
 \description{
 Restores the current renv to the state described in the given lockfile.

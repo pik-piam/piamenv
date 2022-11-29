@@ -4,11 +4,12 @@
 #' If multiple lockfiles are given, ask the user which one to restore.
 #'
 #' @param lockfile One or more paths to lockfiles. The default value assumes an output folder with
-#' run folders containing a renv.lock file each, and/or an renv/archive folder with renv.lock files.
+#' run folders containing renv.lock files, and/or an renv/archive folder with renv.lock files.
+#' @return Invisibly, the return value of renv::restore.
 #'
 #' @author Pascal Führlich
 #' @export
-restoreRenv <- function(lockfile = Sys.glob(c("output/*/renv.lock", "renv/archive/*renv.lock"))) {
+restoreRenv <- function(lockfile = Sys.glob(c("output/*/*renv.lock", "renv/archive/*renv.lock"))) {
   stopifnot(`No renv active. Try starting the R session in the project root.` = !is.null(renv::project()))
 
   if (length(lockfile) > 1) {
@@ -17,5 +18,5 @@ restoreRenv <- function(lockfile = Sys.glob(c("output/*/renv.lock", "renv/archiv
     lockfile <- lockfile[as.integer(getLine())]
   }
 
-  renv::restore(lockfile = lockfile, clean = TRUE, prompt = FALSE)
+  return(invisible(renv::restore(lockfile = lockfile, clean = TRUE, prompt = FALSE)))
 }
