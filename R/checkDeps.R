@@ -8,10 +8,12 @@
 #' @param dependencyTypes The types of dependencies to check. Must be a
 #' subset of `c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")`.
 #' @param action Action to take on unmet dependencies:
-#'   - `"stop"`:  Issue an error with the unmet dependencies.  (Default.)
-#'   - `"warn"`:  Issue a warning with the unmet dependencies.
-#'   - `"pass"`:  Do nothing, just return invisibly.
+#'   - `"stop"`: Issue an error with the unmet dependencies. (Default.)
+#'   - `"warn"`: Issue a warning with the unmet dependencies.
+#'   - `"note"`: Issue a message with the unmet dependencies.
+#'   - `"pass"`: Do nothing, just return invisibly.
 #'   - `"ask"`: Ask the user whether to auto-fix missing dependencies. Requires an active renv.
+#'              Will also write renv.lock
 #' @return Invisibly, a named list of strings indicating whether each package
 #'   requirement is met (`"TRUE"`) or not, in which case the reason is stated.
 #'
@@ -25,32 +27,30 @@ checkDeps <- function(descriptionFile = ".",
                       dependencyTypes = c("Depends", "Imports", "LinkingTo"),
                       action = "stop") {
   stopifnot(all(dependencyTypes %in% c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")))
-  stopifnot(action %in% c("stop", "warn", "pass", "ask"))
+  stopifnot(action %in% c("stop", "warn", "note", "pass", "ask"))
+
+  if (action == "ask") {
+    installedPackages <- fixDeps(ask = TRUE, checkDeps(descriptionFile = descriptionFile,
+                                                       dependencyTypes = dependencyTypes,
+                                                       action = "note"))
+    if (length(installedPackages) > 0) {
+      renv::snapshot(prompt = FALSE)
+    }
+    action <- "stop"
+  }
+
   allDeps <- desc::desc_get_deps(descriptionFile)
   deps <- allDeps[allDeps$type %in% dependencyTypes, ]
   requirementMet <- Map(checkRequirement, package = deps$package, version = deps$version)
 
   if (!all(requirementMet == "TRUE")) {
-    missing <- requirementMet[requirementMet != "TRUE"]
-    msg <- paste(missing, collapse = "\n  ")
-    if (action == "ask" && any(grepl(": ", missing))) {
-      if (!requireNamespace("renv", quietly = TRUE) || is.null(renv::project())) {
-        stop(msg)
-      }
-      message("missing requirements:\n  ", msg, "\n",
-              "Try to fix automatically? (Y/n) ", appendLF = FALSE)
-      if (tolower(getLine()) %in% c("", "y", "yes")) {
-        renvInstall <- sub("^.+: ([^:]+)$", "\\1", grep(": ", missing, value = TRUE))
-        renv::install(renvInstall, prompt = FALSE)
-        renv::snapshot(prompt = FALSE)
-        # after installing, check again in new R session to avoid using already loaded packages
-        return(callr::r(function(...) piamenv::checkDeps(...),
-                        list(descriptionFile, dependencyTypes, action = "stop")))
-      }
-    } else if (action %in% c("stop", "ask")) {
+    msg <- paste(requirementMet[requirementMet != "TRUE"], collapse = "\n  ")
+    if (action == "stop") {
       stop(msg)
     } else if (action == "warn") {
       warning(msg)
+    } else if (action == "note") {
+      message("  ", msg)
     }
   }
 

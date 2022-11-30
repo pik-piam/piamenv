@@ -1,6 +1,6 @@
 {
   "title": "piamenv: Package environment support for PIAM",
-  "version": "0.2.1",
+  "version": "0.3.2",
   "description": "<p>Enables easier management of package environments, based on renv and Python venv.<\/p>",
   "creators": [
     {
