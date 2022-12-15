@@ -24,7 +24,7 @@ subset of \code{c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")}.}
 \item \code{"note"}: Issue a message with the unmet dependencies.
 \item \code{"pass"}: Do nothing, just return invisibly.
 \item \code{"ask"}: Ask the user whether to auto-fix missing dependencies. Requires an active renv.
-Will also write renv.lock
+Will also write renv.lock. If no active renv is found, stops instead.
 }}
 }
 \value{

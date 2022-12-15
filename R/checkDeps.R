@@ -13,7 +13,7 @@
 #'   - `"note"`: Issue a message with the unmet dependencies.
 #'   - `"pass"`: Do nothing, just return invisibly.
 #'   - `"ask"`: Ask the user whether to auto-fix missing dependencies. Requires an active renv.
-#'              Will also write renv.lock
+#'              Will also write renv.lock. If no active renv is found, stops instead.
 #' @return Invisibly, a named list of strings indicating whether each package
 #'   requirement is met (`"TRUE"`) or not, in which case the reason is stated.
 #'
@@ -28,6 +28,9 @@ checkDeps <- function(descriptionFile = ".",
                       action = "stop") {
   stopifnot(all(dependencyTypes %in% c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")))
   stopifnot(action %in% c("stop", "warn", "note", "pass", "ask"))
+  if (action == "ask" && is.null(renv::project())) {
+    action <- "stop"
+  }
 
   if (action == "ask") {
     installedPackages <- fixDeps(ask = TRUE, checkDeps(descriptionFile = descriptionFile,
