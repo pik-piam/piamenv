@@ -12,7 +12,7 @@ checkDeps(
 }
 \arguments{
 \item{descriptionFile}{Path to a DESCRIPTION file or a path that belongs to a
-source package project.}
+source package project. If <descriptionFile>/DEPENDENCIES exists that will be used instead.}
 
 \item{dependencyTypes}{The types of dependencies to check. Must be a
 subset of \code{c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")}.}
