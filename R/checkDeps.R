@@ -4,7 +4,7 @@
 #'
 #' @md
 #' @param descriptionFile Path to a DESCRIPTION file or a path that belongs to a
-#'   source package project.
+#'   source package project. If <descriptionFile>/DEPENDENCIES exists that will be used instead.
 #' @param dependencyTypes The types of dependencies to check. Must be a
 #' subset of `c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances")`.
 #' @param action Action to take on unmet dependencies:
@@ -40,6 +40,10 @@ checkDeps <- function(descriptionFile = ".",
       renv::snapshot(prompt = FALSE)
     }
     action <- "stop"
+  }
+
+  if (file.exists(file.path(descriptionFile, "DEPENDENCIES"))) {
+    descriptionFile <- file.path(descriptionFile, "DEPENDENCIES")
   }
 
   allDeps <- desc::desc_get_deps(descriptionFile)
