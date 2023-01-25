@@ -4,12 +4,12 @@
 \alias{writePythonVirtualEnvLockFile}
 \title{writePythonVirtualEnvLockFile}
 \usage{
-writePythonVirtualEnvLockFile(venv = ".venv", filePath)
+writePythonVirtualEnvLockFile(filePath, venv = ".venv")
 }
 \arguments{
-\item{venv}{Path to Python virtual environment folder.}
-
 \item{filePath}{Path where the virtual environment lock file will be created.}
+
+\item{venv}{Path to Python virtual environment folder.}
 }
 \description{
 Write Python virtual environment lock file specifying package versions currently installed in the given

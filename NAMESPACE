@@ -2,6 +2,7 @@
 
 export(archiveRenv)
 export(checkDeps)
+export(createResultsfolderPythonVirtualEnv)
 export(fixDeps)
 export(pythonBinPath)
 export(restoreRenv)
