@@ -2,8 +2,12 @@
 
 export(archiveRenv)
 export(checkDeps)
+export(createResultsfolderPythonVirtualEnv)
 export(fixDeps)
+export(pythonBinPath)
 export(restoreRenv)
 export(showUpdates)
 export(stopIfLoaded)
+export(updatePythonVirtualEnv)
 export(updateRenv)
+export(writePythonVirtualEnvLockFile)
