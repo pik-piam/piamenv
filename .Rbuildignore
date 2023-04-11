@@ -8,3 +8,4 @@
 ^.*\.zenodo.json$
 ^Makefile$
 ^\.idea$
+^.*CITATION.cff$
