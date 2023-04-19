@@ -8,7 +8,9 @@
 #' @export
 showUpdates <- function(packages = piamPackages()) {
   installed <- utils::installed.packages()
-  outdatedPackages <- utils::old.packages(instPkgs = installed[installed[, "Package"] %in% packages, ])
+  withr::with_options(list(timeout = 15),
+    outdatedPackages <- utils::old.packages(instPkgs = installed[installed[, "Package"] %in% packages, ])
+  )
   if (!is.null(outdatedPackages)) {
     message("The following updates are available:\n",
             paste("-", outdatedPackages[, "Package"], ":",
