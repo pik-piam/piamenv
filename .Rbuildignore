@@ -9,3 +9,5 @@
 ^Makefile$
 ^\.idea$
 ^.*CITATION.cff$
+^.*\.Rproj$
+^\.Rproj\.user$
