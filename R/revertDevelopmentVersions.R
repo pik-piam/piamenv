@@ -24,5 +24,7 @@ revertDevelopmentVersions <- function() {
                   return(b)
               }))
 
-  invisible(renv::install(paste(names(x), x, sep = "@"), prompt = FALSE))
+  if (length(x)) {
+    invisible(renv::install(paste(names(x), x, sep = "@"), prompt = FALSE))
+  }
 }
