@@ -1,7 +1,7 @@
 Type: Package
 Package: piamenv
 Title: Package environment support for PIAM
-Version: 0.5.1
+Version: 0.5.1.9001
 Date: 2024-02-23
 Authors@R:
     person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = c("aut", "cre"))
