@@ -13,5 +13,5 @@ Invisibly, the return value of renv::update.
 Update all PIK-PIAM packages in the current renv, write renv.lock into archive.
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }

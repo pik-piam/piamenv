@@ -32,20 +32,20 @@ update.packages()
 
 ## Questions / Problems
 
-In case of questions / problems please contact Pascal Führlich <pascal.fuehrlich@pik-potsdam.de>.
+In case of questions / problems please contact Pascal Sauer <pascal.sauer@pik-potsdam.de>.
 
 ## Citation
 
 To cite package **piamenv** in publications use:
 
-Führlich P (2024). _piamenv: Package environment support for PIAM_. R package version 0.5.2, <https://github.com/pik-piam/piamenv>.
+Sauer P (2024). _piamenv: Package environment support for PIAM_. R package version 0.5.2, <https://github.com/pik-piam/piamenv>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Manual{,
   title = {piamenv: Package environment support for PIAM},
-  author = {Pascal Führlich},
+  author = {Pascal Sauer},
   year = {2024},
   note = {R package version 0.5.2},
   url = {https://github.com/pik-piam/piamenv},

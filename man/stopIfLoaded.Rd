@@ -27,5 +27,5 @@ piamenv::stopIfLoaded(names(updates))
 
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }

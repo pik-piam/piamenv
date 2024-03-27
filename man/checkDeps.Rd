@@ -39,5 +39,5 @@ checkDeps(system.file("DESCRIPTION", package = "piamenv"))
 
 }
 \author{
-Pascal Führlich, Michaja Pehl
+Pascal Sauer, Michaja Pehl
 }

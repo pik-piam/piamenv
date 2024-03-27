@@ -4,7 +4,7 @@
 #'
 #' @return Invisibly, the absolute path to the created lockfile.
 #'
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #' @export
 archiveRenv <- function() {
   stopifnot(`No renv active. Try starting the R session in the project root.` = !is.null(renv::project()))

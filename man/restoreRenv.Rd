@@ -20,5 +20,5 @@ Restores the current renv to the state described in the given lockfile.
 If multiple lockfiles are given, ask the user which one to restore.
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }

@@ -6,7 +6,7 @@
 #' @param requirementMet The output of piamenv::checkDeps.
 #' @return Invisibly, the return value of renv::install.
 #'
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #'
 #' @export
 fixDeps <- function(ask = FALSE, requirementMet = checkDeps(action = if (ask) "note" else "pass")) {
