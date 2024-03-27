@@ -7,7 +7,7 @@
 #'
 #' @param updatedPackage One or more names of packages that were just updated.
 #'
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #' @examples
 #' \dontrun{
 #' updates <- piamenv::fixDeps()

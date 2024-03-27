@@ -21,5 +21,5 @@ Invisibly, the return value of renv::install.
 Automatically install package versions as suggested by piamenv::checkDeps into an renv.
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }

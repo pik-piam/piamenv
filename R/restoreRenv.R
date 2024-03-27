@@ -7,7 +7,7 @@
 #' run folders containing renv.lock files, and/or an renv/archive folder with renv.lock files.
 #' @return Invisibly, the return value of renv::restore.
 #'
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #' @export
 restoreRenv <- function(lockfile = Sys.glob(c("output/*/*renv.lock", "renv/archive/*renv.lock"))) {
   stopifnot(`No renv active. Try starting the R session in the project root.` = !is.null(renv::project()))

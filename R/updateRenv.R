@@ -4,7 +4,7 @@
 #'
 #' @return Invisibly, the return value of renv::update.
 #'
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #' @export
 updateRenv <- function() {
   stopifnot(`No renv active. Try starting the R session in the project root.` = !is.null(renv::project()))

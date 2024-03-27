@@ -17,7 +17,7 @@
 #' @return Invisibly, a named list of strings indicating whether each package
 #'   requirement is met (`"TRUE"`) or not, in which case the reason is stated.
 #'
-#' @author Pascal Führlich, Michaja Pehl
+#' @author Pascal Sauer, Michaja Pehl
 #'
 #' @examples
 #' checkDeps(system.file("DESCRIPTION", package = "piamenv"))
@@ -77,11 +77,9 @@ checkRequirement <- function(package, version) {
   # if the package is not installed
   if (is.na(packageVersion)) {
     result <- paste0(package, " is required, but not installed - please install: ", package)
-  # if we don't care about the version
-  } else if (version == "*") {
+  } else if (version == "*") { # if we don't care about the version
     result <- "TRUE"
-  # compare version requirement
-  } else {
+  } else { # compare version requirement
     validops <- c("<", "<=", ">", ">=", "==", "!=")
 
     # split version into operator and version number
@@ -113,8 +111,7 @@ checkRequirement <- function(package, version) {
           result <- paste0(result, "install a compatible version of ", package)
         }
       }
-    # catch faulty declarations
-    } else {
+    } else { # catch faulty declarations
       result <- paste("invalid dependency declaration", package, version)
     }
   }

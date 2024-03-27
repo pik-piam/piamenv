@@ -13,5 +13,5 @@ Invisibly, the absolute path to the created lockfile.
 Writes a new <timestamp>_renv.lock based on the current package environment into renv::project()/renv/archive.
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }
