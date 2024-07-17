@@ -1,0 +1,44 @@
+#' checkPythonEnv.R
+#'
+#' Determine the host system's Python installation
+#'
+#' @param path Optional. Fully qualified path to the Python environment
+#'
+#' @author Tonn Rüter
+#' @export
+#' @importFrom reticulate use_condaenv use_virtualenv use_python py_discover_config
+checkPythonEnv <- function(path) {
+  # Check if the directory exists
+  if (!dir.exists(path)) {
+    stop("Provided path '", path, "' does not exist.")
+  }
+  # Heuristic to guess and possibly activate the provided Python environment
+  if (file.exists(file.path(path, "conda-meta"))) {
+    message("Detected conda environment")
+    tryCatch(
+      {
+        use_condaenv(path)
+      },
+      error = function(e) {
+        stop("Unable to use conda environment '", path, "'")
+      }
+    )
+  } else if (file.exists(file.path(path, "pyvenv.cfg"))) {
+    message("Detected venv environment")
+    tryCatch(
+      {
+        use_virtualenv(path)
+      },
+      error = function(e) {
+        stop("Unable to use venv environment '", path, "'")
+      }
+    )
+  } else if (file.exists(file.path(path, "bin/python")) || file.exists(file.path(path, "python.exe"))) {
+    message("No virtual environment detected. WARNING: Using system Python is not recommended.")
+    use_python(path)
+  } else {
+    # path likely does not contain a Python environment, try use_python anyway, since it will raise an error
+    use_python(path)
+  }
+  return(py_discover_config())
+}
