@@ -12,7 +12,8 @@ Imports:
     desc,
     methods,
     renv,
-    withr
+    withr,
+    reticulate
 Suggests:
     covr,
     testthat
