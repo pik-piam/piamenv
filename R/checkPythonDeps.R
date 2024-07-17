@@ -1,4 +1,4 @@
-#' checkPythonDependencies.R
+#' checkPythonDeps.R
 #'
 #' Verify the availability of REMIND's Python dependencies on the host system.
 #'
@@ -8,7 +8,8 @@
 #' @author Tonn Rüter
 #' @export
 #' @importFrom reticulate import
-checkPythonDependencies <- function(dependencies, fail = TRUE) {
+checkPythonDeps <- function(dependencies, action = "stop") {
+  stopifnot(action %in% c("stop", "warn", "note", "pass"))
   missingDependencies <- c()
   for (dep in dependencies) {
     tryCatch(
@@ -18,9 +19,12 @@ checkPythonDependencies <- function(dependencies, fail = TRUE) {
       }
     )
   }
-  if (length(missingDependencies) > 0 && fail) {
+  if (length(missingDependencies) > 0 && action == "stop") {
     stop("Missing Python dependencies: ", paste(missingDependencies, collapse = ", "))
-  } else if (length(missingDependencies) > 0) {
+  } else if (length(missingDependencies) > 0 && action == "warn") {
+    warning("Missing Python dependencies: ", paste(missingDependencies, collapse = ", "))
+    return(invisible(FALSE))
+  } else if (length(missingDependencies) > 0 && action == "note") {
     message("Missing Python dependencies: ", paste(missingDependencies, collapse = ", "))
     return(invisible(FALSE))
   } else {
