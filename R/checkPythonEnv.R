@@ -17,7 +17,7 @@ checkPythonEnv <- function(path) {
     message("Detected conda environment")
     tryCatch(
       {
-        use_condaenv(path)
+        use_condaenv(path, required = TRUE)
       },
       error = function(e) {
         stop("Unable to use conda environment '", path, "'")
@@ -27,7 +27,7 @@ checkPythonEnv <- function(path) {
     message("Detected venv environment")
     tryCatch(
       {
-        use_virtualenv(path)
+        use_virtualenv(path, required = TRUE)
       },
       error = function(e) {
         stop("Unable to use venv environment '", path, "'")
