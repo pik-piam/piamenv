@@ -70,7 +70,7 @@ extractPythonVersion <- function(versionString) {
 #' @return TRUE operator is satisfied, FALSE otherwise
 comparePythonVersions <- function(operator, first, second, strict = TRUE) {
   # Compare individual components of the version strings in decreasing order of importance
-  for (component in c("version", "subversion", "patchlevel", "releaseCandidate")) {
+  for (component in c("major", "minor", "patch", "releaseVersion")) {
     # If strict comparison is not required and the component is NA in either version, skip the comparison
     if (!strict && (is.na(first[[component]]) || is.na(second[[component]]))) next
     # Choosing -1 for NA means missing version components are considered less than 0.
