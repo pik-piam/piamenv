@@ -16,13 +16,14 @@
 #'
 #' @param version, subversion, patchlevel, releaseCandidate Version components.
 #' @return A list representing the Python version.
-createPythonVersion <- function(version, subversion, patchlevel, releaseCandidate) {
+createPythonVersion <- function(major = "", minor = "", patch = "", releaseType = "", releaseVersion = "") {
   # Store the components in a named list
   return(list(
-    version = version,
-    subversion = subversion,
-    patchlevel = patchlevel,
-    releaseCandidate = releaseCandidate
+    major = as.integer(major),
+    minor = as.integer(minor),
+    patch = as.integer(patch),
+    releaseType = as.character(releaseType),
+    releaseVersion = as.integer(releaseVersion)
   ))
 }
 
