@@ -54,10 +54,13 @@ extractPythonVersion <- function(versionString) {
 #'
 #' This function compares two Python versions.
 #'
-#' @param version1, version2 Python versions to compare.
-#' @return -1 if version1 < version2, 0 if version1 == version2, 1 if version1 > version2.
+#' @param operator Comparison operator. One of '==', '!=', '>', '>=', '<' or '<='
+#' @param first First Python version string to compare against
+#' @param second Second Python version string
+#' @param strict Strict comparison of version components (e.g. 3.10 != 3.10.0)
+#' @return TRUE operator is satisfied, FALSE otherwise
 comparePythonVersions <- function(operator, first, second, strict = TRUE) {
-  # Compare the versions
+  # Compare individual components of the version strings in decreasing order of importance
   for (component in c("version", "subversion", "patchlevel", "releaseCandidate")) {
     # If strict comparison is not required and the component is NA in either version, skip the comparison
     if (!strict && (is.na(first[[component]]) || is.na(second[[component]]))) next
@@ -65,9 +68,9 @@ comparePythonVersions <- function(operator, first, second, strict = TRUE) {
     # Hence, a version like 3.10 (= 3.10.NA) would be considered less than 3.10.0.
     v1 <- ifelse(is.na(first[[component]]), -1, first[[component]])
     v2 <- ifelse(is.na(second[[component]]), -1, second[[component]])
-    # If components are equal, continue to the next component
+    # Since we're comparing in decreasing order of importance, we can continue if components are equal ..
     if (v1 == v2) next
-
+    # .. or immediately return the result of the comparison if they are not equal
     return(switch(operator,
       ">=" = v1 >= v2,
       "==" = v1 == v2,
@@ -78,11 +81,11 @@ comparePythonVersions <- function(operator, first, second, strict = TRUE) {
       stop("Invalid operator '", operator, "'. Must be either '==', '!=', '>', '>=', '<' or '<='.")
     ))
   }
-
   # If all components are equal or NA (in non-strict mode), return the result of the equality comparison
   return(switch(operator,
+    ">=" = TRUE,
     "==" = TRUE,
-    "!=" = FALSE,
+    "<=" = TRUE,
     FALSE
   ))
 }
