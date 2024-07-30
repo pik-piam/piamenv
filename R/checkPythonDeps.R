@@ -5,6 +5,7 @@
 #' @author Tonn Rüter
 #' @export
 #' @importFrom reticulate import
+#' @importFrom stringr regex str_match
 
 # ---------------------
 # Utility Functions
@@ -34,20 +35,27 @@ createPythonVersion <- function(major = "", minor = "", patch = "", releaseType 
 #' @param versionString Version string.
 #' @return A list representing the Python version.
 extractPythonVersion <- function(versionString) {
-  # Split the Python version into its components
-  versionComponents <- strsplit(versionString, "\\.")[[1]]
-
-  # Extract the release candidate from the patch level, if present
-  patchlevelComponents <- strsplit(versionComponents[3], "(rc|a)")[[1]]
-  patchlevel <- ifelse(length(patchlevelComponents) >= 1, as.integer(patchlevelComponents[1]), NA)
-  releaseCandidate <- ifelse(length(patchlevelComponents) >= 2, as.integer(patchlevelComponents[2]), NA)
-
-  # Use the pythonVersion function to create the Python version list
+  # Check PIP 440 and implementation for an even more extensive version regex. This represents a resonable subset
+  # of what to expect in the wild (https://www.python.org/dev/peps/pep-0440/#version-scheme)
+  versionRegex <- regex("
+    v?                    # Leading v
+    (?<major>[0-9]+)\\.?  # Major version
+    (?<minor>[0-9]+)?\\.? # Minor version
+    (?<patch>[0-9]+)?     # Patch version
+    [-_\\.]?              # Possible separator
+    (?<rtype>alpha|a|beta|b|preview|pre|c|rc)? # Release type
+    [-_\\.]?             # Possible separator
+    (?<rnum>[0-9]+)?     # Release number
+    ", comments = TRUE)
+  # str_match a matrix with first column containing the entire match and then all individual group patterns with
+  # columns named after the group names
+  matches <- str_match(versionString, versionRegex)
   return(createPythonVersion(
-    version = as.integer(versionComponents[1]),
-    subversion = as.integer(versionComponents[2]),
-    patchlevel = patchlevel,
-    releaseCandidate = releaseCandidate
+    major = matches[, "major"],
+    minor = matches[, "minor"],
+    patch = matches[, "patch"],
+    releaseType = matches[, "rtype"],
+    releaseVersion = matches[, "rnum"]
   ))
 }
 
