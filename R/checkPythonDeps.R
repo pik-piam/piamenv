@@ -28,6 +28,22 @@ createPythonVersion <- function(major = "", minor = "", patch = "", releaseType 
   ))
 }
 
+#' Print Python version string
+#' 
+#' This function creates a string representation of a Python version.
+#' 
+#' @param pythonVerion A list representing the Python version.
+#' @return A string representation of the Python version.
+printPythonVersion <- function(pythonVerion) {
+  return(paste0(
+    ifelse(is.na(pythonVerion$major), "", as.character(pythonVerion$major)),
+    ifelse(is.na(pythonVerion$minor), "", paste0(".", as.character(pythonVerion$minor))),
+    ifelse(is.na(pythonVerion$patch), "", paste0(".", as.character(pythonVerion$patch))),
+    ifelse(is.na(pythonVerion$releaseType), "", pythonVerion$releaseType),
+    ifelse(is.na(pythonVerion$releaseVersion), "", pythonVerion$releaseVersion)
+  ))
+}
+
 #' Extract Python Version
 #'
 #' This function extracts the Python version from a string.
@@ -99,6 +115,25 @@ comparePythonVersions <- function(operator, first, second, strict = TRUE) {
   ))
 }
 
+#' Create Python Dependency
+#'
+#' This function creates a list representing a Python dependency on a module
+#'
+#' @param name Name of the dependency
+#' @param operator Comparison operator
+#' @param version Version of the dependency
+#' @param build Build version of the dependency
+#' @param repo Repository URL of the dependency
+createPythonDependency <- function(name = "", operator = "", version = createPythonVersion(), build = "", repo = "") {
+  return(list(
+    name = name,
+    operator = operator,
+    version = version,
+    build = build,
+    repo = repo
+  ))
+}
+
 #' Extract Python Package and Version
 #'
 #' This function extracts the package name and version from a dependency string.
@@ -106,32 +141,49 @@ comparePythonVersions <- function(operator, first, second, strict = TRUE) {
 #' @param dependency Dependency string.
 #' @param style Style of the dependency string. Either "pip" or "conda".
 #' @return A list containing the package name and version.
-extractPythonPackageAndVersion <- function(dependency, style = "pip") {
-  # Check if 'style' is either 'pip' or 'conda'
-  if (!style %in% c("pip", "conda")) {
+extractPythonDependency <- function(depString, style = "pip") {
+  if (grepl(" @ ", depString)) {
+    if (style == "conda") {
+      warning("Invalid dependency string: Conda dependencies cannot contain repository URLs")
+    }
+    # Example: "climate-assessment @ <URL to git repo> -> Split at "@", first part is dependency name,
+    # second part is repo URL
+    pattern <- "(.*)( @ )(.*)"
+    splitDepString <- strcapture(pattern, depString, proto = list(name = "", operator = "", repo = ""))
+    splitRepoString <- strsplit(splitDepString$repo, "@")[[1]]
+    return(createPythonDependency(
+      splitDepString[1],
+      " @ ",
+      createPythonVersion(),
+      build = splitRepoString[2],
+      repo = splitRepoString[1]
+    ))
+  } else if (style == "conda") {
+    # Example: "pip=24.0=pyhd8ed1ab_0" -> Split at "=", first part is dependency name, second part is version,
+    # third part is build
+    splitDepString <- strsplit(depString, "=")[[1]]
+    extractPythonVersion(splitDepString[2])
+    return(createPythonDependency(
+      splitDepString[1],
+      "==",
+      extractPythonVersion(splitDepString[2]),
+      build = splitDepString[3],
+      repo = ""
+    ))
+  } else if (style == "pip") {
+    # Example: "climate_assessment==0.1.4a0" -> Split at "==", first part is dependency name, second part is version
+    pattern <- "(.*)(==|>=|<=|>|<|!=)(.*)"
+    splitDepString <- strcapture(pattern, depString, proto = list(name = "", operator = "", version = ""))
+    return(createPythonDependency(
+      splitDepString$name,
+      splitDepString$operator,
+      extractPythonVersion(splitDepString$version),
+      build = "",
+      repo = ""
+    ))
+  } else {
     stop("Invalid argument: 'style' should be either 'pip' or 'conda'")
   }
-
-  # Split the dependency based on the 'style' type
-  splitDependency <- strsplit(dependency, ifelse(style == "pip", "(==|>=|<=|>|<|!=)", "="))[[1]]
-
-  # Check if a valid dependency was provided
-  if ((style == "pip" && length(splitDependency) < 2) || (style == "conda" && length(splitDependency) < 3)) {
-    stop("Invalid dependency")
-  }
-
-  # Extract the name, operator, version, and build
-  name <- splitDependency[1]
-  operator <- ifelse(style == "pip", splitDependency[2], "==")
-  version <- extractPythonVersion(splitDependency[2])
-  build <- ifelse(style == "conda", splitDependency[3], "")
-
-  return(list(
-    name = name,
-    operator = operator,
-    version = version,
-    build = build
-  ))
 }
 
 # ---------------------
@@ -146,38 +198,39 @@ extractPythonPackageAndVersion <- function(dependency, style = "pip") {
 #' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass".
 #' @param checkVersion Logical indicating whether to check for matching versions.
 #' @return TRUE if all dependencies are installed, FALSE otherwise.
-checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE) {
+checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE, verbose = FALSE) {
   stopifnot(action %in% c("stop", "warn", "note", "pass"))
-
+  # Keep track of missing dependencies
   missingDependencies <- c()
-
-  for (dep in dependencies) {
-    packageInfo <- extractPythonPackageAndVersion(dep)
-    packageName <- packageInfo$name
-    requiredVersion <- packageInfo$version
-
+  for (dependencyString in dependencies) {
+    dependency <- extractPythonDependency(dependencyString)
     tryCatch(
       {
-        package <- import(packageName)
-        installedVersion <- package$`__version__`
-
-        if (checkVersion && (is.null(installedVersion) || !comparePythonVersions(">=", installedVersion, requiredVersion))) {
-          missingDependencies <- c(missingDependencies, dep)
+        pythonModule <- import(dependency$name)
+        if (checkVersion) {
+          installedVersion <- extractPythonVersion(pythonModule$`__version__`)
+          correctVersion <- comparePythonVersions(dependency$operator, installedVersion, dependency$version)
+          if (!correctVersion) {
+            missingDependencies <- c(
+              missingDependencies,
+              paste0(dependencyString, " (found version: ", printPythonVersion(installedVersion), ")")
+            )
+          }
         }
       },
       error = function(e) {
-        missingDependencies <- c(missingDependencies, dep)
+        missingDependencies <<- c(missingDependencies, dependencyString)
       }
     )
   }
-
+  # Error handling when dependencies are missing
   if (length(missingDependencies) > 0 && action == "stop") {
-    stop("Missing Python dependencies: ", paste(missingDependencies, collapse = ", "))
+    stop("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
   } else if (length(missingDependencies) > 0 && action == "warn") {
-    warning("Missing Python dependencies: ", paste(missingDependencies, collapse = ", "))
+    warning("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
     return(invisible(FALSE))
   } else if (length(missingDependencies) > 0 && action == "note") {
-    message("Missing Python dependencies: ", paste(missingDependencies, collapse = ", "))
+    message("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
     return(invisible(FALSE))
   } else {
     return(invisible(TRUE))
