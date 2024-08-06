@@ -1,11 +1,16 @@
 #' checkPythonDeps.R
 #'
-#' Verify the availability of REMIND's Python dependencies on the host system.
+#' Verify the availability of REMIND's Python dependencies on the host system. Exposes two functions:
+#' \code{checkPythonRequirements} and \code{checkPythonDeps}. While \code{checkPythonRequirements} reads a pip-style
+#' requirements (YAML) file and compares the required packages with the installed ones, \code{checkPythonDeps} checks
+#' if the required Python dependencies can actually be imported in the Python environment provided.
 #'
 #' @author Tonn Rüter
 #' @export
-#' @importFrom reticulate import
+#' @importFrom reticulate import py_list_packages
 #' @importFrom stringr regex str_match
+#' @importFrom purrr map map_chr pmap
+#' @importFrom yaml read_yaml
 
 # ---------------------
 # Utility Functions
@@ -197,14 +202,14 @@ extractPythonDependency <- function(depString, style = "pip") {
 #'
 #' Checks if the required Python dependencies can actually be imported in the Python environment provided. Relies on reticulate::import. Optionally check if versions are met.
 #'
-#' @param dependencies Vector of dependency strings.
-#' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass".
-#' @param checkVersion Logical indicating whether to check for matching versions.
-#' @return TRUE if all dependencies are installed, FALSE otherwise.
+#' @param dependencies Vector of dependency strings
+#' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass"
+#' @param strict Logical indicating whether to check for matching versions
+#' @return TRUE if all dependencies are installed, FALSE otherwise
 #' @example
 #' deps <- c("climate_assessment==0.1.4a0", "numpy<2.0")
-#' checkPythonDeps(deps, action="stop", checkVersion = TRUE, verbose = TRUE)
-checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE, verbose = FALSE) {
+#' checkPythonDeps(deps, action="stop", strict = TRUE)
+checkPythonDeps <- function(dependencies, action = "stop", strict = FALSE) {
   stopifnot(action %in% c("stop", "warn", "note", "pass"))
   # Keep track of missing dependencies
   missingDependencies <- c()
@@ -213,7 +218,7 @@ checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE,
     tryCatch(
       {
         pythonModule <- import(dependency$name)
-        if (checkVersion) {
+        if (strict) {
           installedVersion <- extractPythonVersion(pythonModule$`__version__`)
           correctVersion <- comparePythonVersions(dependency$operator, installedVersion, dependency$version)
           if (!correctVersion) {
@@ -245,29 +250,81 @@ checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE,
 
 #' Check Python Dependencies and Versions
 #'
-#' Checks if the required Python dependencies are installed and if version requirements are met.
+#' Compares requirements given in a pip-style YAML file with the installed Python packages. Optionally check if versions
+#' are met.
 #'
-#' @param requiredPackages Vector of required packages with optional versions.
-#' @param installedPackages Vector of installed packages with versions.
-#' @param checkVersion Logical indicating whether to check for matching versions.
+#' @param requirementsFile Path to a YAML file containing the required Python dependencies. File must be in pip format
+#' @param installed Python packages installed in the environment. Defaults to reticulate::py_list_packages()
+#' @param action Action if a dependency or version is missing or mismatched. Either "stop", "warn", "note", or "pass"
+#' @param strict Logical indicating whether to check for strict version matching. Default is TRUE
 #' @return Vector of missing packages.
-checkInstalledPackages <- function(requiredPackages, installedPackages, checkVersion = FALSE) {
-  # Extract package names and versions
-  requiredInfos <- purrr::map(requiredPackages, extractPythonDependency)
-  requiredNames <- purrr::map_chr(requiredInfos, "name")
-  requiredVersions <- purrr::map_chr(requiredInfos, "version")
-
-  installedInfos <- purrr::map(installedPackages, extractPythonDependency)
-  installedNames <- purrr::map_chr(installedInfos, "name")
-  installedVersions <- purrr::map_chr(installedInfos, "version")
-
-  # Check if packages are installed and versions match
-  if (checkVersion) {
-    missingPackages <- requiredPackages[!(
-      requiredNames %in% installedNames & purrr::map2_lgl(requiredVersions, installedVersions, comparePythonVersions) == 0)]
-  } else {
-    missingPackages <- requiredPackages[!(requiredNames %in% installedNames)]
+checkPythonRequirements <- function(requirementsFile, installed = py_list_packages(), action = "stop", strict = TRUE) {
+  # Sanity checks for file ...
+  if (!file.exists(requirementsFile)) {
+    stop("Requirements file '", requirementsFile, "' does not exist.")
   }
-
-  return(missingPackages)
+  # ... and action
+  if (!action %in% c("stop", "warn", "note", "pass")) {
+    stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
+  }
+  # Read the requirements file
+  requirements <- readLines(requirementsFile)
+  # Filter out empty or whitespace-only strings and sort alphabetically
+  requirements <- sort(requirements[!grepl("^\\s*$", requirements)])
+  requiredDependencies <- map(requirements, extractPythonDependency, style = "pip")
+  requiredPackages <- map_chr(requiredDependencies, "name")
+  # Now check if the required packages are installed ...
+  missing <- !(requiredPackages %in% installed$package)
+  present <- installed$package %in% requiredPackages
+  # ... and in strict mode if they have the correct versions
+  if (strict && all(!missing)) {
+    # Use purrr's list comprehension to see if the installed package versions agree with the requirements. pmap applies
+    # the comparison function to the list of lists element-wise. The result is a logical vector, one for each package,
+    # indicating whether the version fullfills the requirement
+    nomatch <- unlist(pmap(
+      # We need to consider three lists: The comparison operators, the installed versions and the required versions
+      list(
+        map(requiredDependencies, "operator"), # Extract comparison operators from depencies
+        # From all dependencies that are present in the Python environment, extract the version strings and convert them
+        map(installed$version[present], extractPythonVersion),
+        map(requiredDependencies, "version") # Extract required versions from deps
+      ),
+      comparePythonVersions
+    ))
+  } else {
+    # If we're not in strict mode, skip the version comparison and assume all versions are correct
+    nomatch <- rep(TRUE, length(requiredPackages))
+  }
+  # Error handling when dependencies are missing or versions mismatch
+  switch(action,
+    "stop" = {
+      if (any(missing)) {
+        stop("Missing dependencies: ", paste(requirements[missing], collapse = ", "))
+      }
+      if (any(!nomatch)) {
+        stop("Version mismatch: ", paste(requirements[!nomatch], collapse = ", "))
+      }
+    },
+    "warn" = {
+      if (any(missing)) {
+        warning("Missing dependencies: ", paste(requirements[missing], collapse = ", "))
+      }
+      if (any(!nomatch)) {
+        warning("Version mismatch: ", paste(requirements[!nomatch], collapse = ", "))
+      }
+      return(invisible(FALSE))
+    },
+    "note" = {
+      if (any(missing)) {
+        message("Missing dependencies: ", paste(requirements[missing], collapse = ", "))
+      }
+      if (any(!nomatch)) {
+        message("Version mismatch: ", paste(requirements[!nomatch], collapse = ", "))
+      }
+      return(invisible(FALSE))
+    },
+    "pass" = {
+      return(invisible(TRUE))
+    }
+  )
 }
