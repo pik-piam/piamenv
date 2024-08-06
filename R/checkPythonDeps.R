@@ -6,7 +6,6 @@
 #' required Python dependencies can actually be imported in the Python environment provided.
 #'
 #' @author Tonn Rüter
-#' @export
 #' @importFrom reticulate import py_list_packages
 #' @importFrom stringr regex str_match
 #' @importFrom purrr map map_chr pmap
