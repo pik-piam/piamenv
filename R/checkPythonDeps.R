@@ -19,8 +19,12 @@
 #'
 #' This function creates a named list representing a Python version string from its components.
 #'
-#' @param version, subversion, patchlevel, releaseCandidate Version components.
-#' @return A list representing the Python version.
+#' @param major Major version number
+#' @param minor Minor version number
+#' @param patch Patch version number
+#' @param releaseType Release type (e.g. alpha, beta, rc)
+#' @param releaseVersion Release version number
+#' @return A named list representing a Python version string 
 createPythonVersion <- function(major = "", minor = "", patch = "", releaseType = "", releaseVersion = "") {
   # Store the components in a named list
   return(list(
@@ -145,7 +149,7 @@ createPythonDependency <- function(name = "", operator = "", version = createPyt
 #' (e.g. "numpy==1.26.4") and returns a named list representing the dependency. Dependencies on specific repositories
 #' are also supported (e.g. "climate-assessment @ <URL to git repo>")
 #'
-#' @param dependency Dependency string such as "numpy<=2.0"
+#' @param depString Dependency string such as "numpy<=2.0"
 #' @param style Style of the dependency string. Either "pip" or "conda"
 #' @return A named list representation of the Pzthon package name and version
 extractPythonDependency <- function(depString, style = "pip") {
