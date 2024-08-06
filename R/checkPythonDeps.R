@@ -200,7 +200,8 @@ extractPythonDependency <- function(depString, style = "pip") {
 
 #' Check Python Dependencies and Optionally Their Versions
 #'
-#' Checks if the required Python dependencies can actually be imported in the Python environment provided. Relies on reticulate::import. Optionally check if versions are met.
+#' Checks if the required Python dependencies can actually be imported in the Python environment provided. Relies on
+#' reticulate::import. Optionally check if versions are met
 #'
 #' @param dependencies Vector of dependency strings
 #' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass"
