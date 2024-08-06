@@ -2,15 +2,14 @@
 #'
 #' Verify the availability of REMIND's Python dependencies on the host system. Exposes two functions:
 #' \code{checkPythonRequirements} and \code{checkPythonDeps}. While \code{checkPythonRequirements} reads a pip-style
-#' requirements (YAML) file and compares the required packages with the installed ones, \code{checkPythonDeps} checks
-#' if the required Python dependencies can actually be imported in the Python environment provided.
+#' requirements file and compares the required packages with the installed ones, \code{checkPythonDeps} checks if the 
+#' required Python dependencies can actually be imported in the Python environment provided.
 #'
 #' @author Tonn Rüter
 #' @export
 #' @importFrom reticulate import py_list_packages
 #' @importFrom stringr regex str_match
 #' @importFrom purrr map map_chr pmap
-#' @importFrom yaml read_yaml
 
 # ---------------------
 # Utility Functions
@@ -262,10 +261,10 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
 
 #' Check Python Dependencies and Versions
 #'
-#' Compares requirements given in a pip-style YAML file with the installed Python packages. Optionally check if versions
-#' are met.
+#' Compares requirements given in a pip-style file with the installed Python packages. Optionally check if versions are 
+#' met.
 #'
-#' @param requirementsFile Path to a YAML file containing the required Python dependencies. File must be in pip format
+#' @param requirementsFile Path to a file containing the Python requirements. pip-style requirements are expected
 #' @param installed Python packages installed in the environment. Defaults to reticulate::py_list_packages()
 #' @param action Action if a dependency or version is missing or mismatched. Either "stop", "warn", "note", or "pass"
 #' @param strict Logical indicating whether to check for strict version matching. Default is TRUE

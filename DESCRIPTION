@@ -12,9 +12,11 @@ Imports:
     desc,
     methods,
     renv,
-    withr,
     reticulate,
-    purrr
+    stringr,
+    purrr,
+    withr,
+    yaml
 Suggests:
     covr,
     testthat
