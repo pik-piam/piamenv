@@ -13,7 +13,7 @@
 
 #' Create Python Version
 #'
-#' This function creates a Python version from its components.
+#' This function creates a named list representing a Python version string from its components.
 #'
 #' @param version, subversion, patchlevel, releaseCandidate Version components.
 #' @return A list representing the Python version.
@@ -29,10 +29,10 @@ createPythonVersion <- function(major = "", minor = "", patch = "", releaseType 
 }
 
 #' Print Python version string
-#' 
+#'
 #' This function creates a string representation of a Python version.
-#' 
-#' @param pythonVerion A list representing the Python version.
+#'
+#' @param pythonVerion A named list representing the Python version.
 #' @return A string representation of the Python version.
 printPythonVersion <- function(pythonVerion) {
   return(paste0(
@@ -46,13 +46,14 @@ printPythonVersion <- function(pythonVerion) {
 
 #' Extract Python Version
 #'
-#' This function extracts the Python version from a string.
+#' This function extracts a named list representing Python version from a string by matching a regular expression.
 #'
-#' @param versionString Version string.
-#' @return A list representing the Python version.
+#' @param versionString A Python version string like "3.10.0a0"
+#' @return A named list representing the Python version
 extractPythonVersion <- function(versionString) {
   # Check PIP 440 and implementation for an even more extensive version regex. This represents a resonable subset
-  # of what to expect in the wild (https://www.python.org/dev/peps/pep-0440/#version-scheme)
+  # of what to expect in the wild (https://www.python.org/dev/peps/pep-0440/#version-scheme), but might need to be
+  # extended for specific use cases such as post-releases or local versions.
   versionRegex <- regex("
     v?                    # Leading v
     (?<major>[0-9]+)\\.?  # Major version
@@ -77,11 +78,11 @@ extractPythonVersion <- function(versionString) {
 
 #' Compare Python Versions
 #'
-#' This function compares two Python versions.
+#' This function compares two Python versions
 #'
 #' @param operator Comparison operator. One of '==', '!=', '>', '>=', '<' or '<='
-#' @param first First Python version string to compare against
-#' @param second Second Python version string
+#' @param first First Python version (represented as named list)
+#' @param second Second Python version (represented as named list) to compare against
 #' @param strict Strict comparison of version components (e.g. 3.10 != 3.10.0)
 #' @return TRUE operator is satisfied, FALSE otherwise
 comparePythonVersions <- function(operator, first, second, strict = TRUE) {
@@ -115,13 +116,13 @@ comparePythonVersions <- function(operator, first, second, strict = TRUE) {
   ))
 }
 
-#' Create Python Dependency
+#' Create a named list representation of a Python dependency
 #'
-#' This function creates a list representing a Python dependency on a module
+#' This function creates a named list representing a dependency on a particular Python package
 #'
 #' @param name Name of the dependency
-#' @param operator Comparison operator
-#' @param version Version of the dependency
+#' @param operator Comparison operator. One of '==', '!=', '>', '>=', '<' or '<='
+#' @param version Named list representation of the Python version of the dependency
 #' @param build Build version of the dependency
 #' @param repo Repository URL of the dependency
 createPythonDependency <- function(name = "", operator = "", version = createPythonVersion(), build = "", repo = "") {
@@ -134,13 +135,15 @@ createPythonDependency <- function(name = "", operator = "", version = createPyt
   ))
 }
 
-#' Extract Python Package and Version
+#' Extract Python dependency from dependency string
 #'
-#' This function extracts the package name and version from a dependency string.
+#' This function extracts the package name, relationship operator and version from a typical Python dependency string
+#' (e.g. "numpy==1.26.4") and returns a named list representing the dependency. Dependencies on specific repositories
+#' are also supported (e.g. "climate-assessment @ <URL to git repo>")
 #'
-#' @param dependency Dependency string.
-#' @param style Style of the dependency string. Either "pip" or "conda".
-#' @return A list containing the package name and version.
+#' @param dependency Dependency string such as "numpy<=2.0"
+#' @param style Style of the dependency string. Either "pip" or "conda"
+#' @return A named list representation of the Pzthon package name and version
 extractPythonDependency <- function(depString, style = "pip") {
   if (grepl(" @ ", depString)) {
     if (style == "conda") {
@@ -190,14 +193,17 @@ extractPythonDependency <- function(depString, style = "pip") {
 # Main Functions
 # ---------------------
 
-#' Check Python Dependencies and Optionally Versions
+#' Check Python Dependencies and Optionally Their Versions
 #'
-#' Checks if the required Python dependencies can be imported. Optionally check if versions are met.
+#' Checks if the required Python dependencies can actually be imported in the Python environment provided. Relies on reticulate::import. Optionally check if versions are met.
 #'
 #' @param dependencies Vector of dependency strings.
 #' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass".
 #' @param checkVersion Logical indicating whether to check for matching versions.
 #' @return TRUE if all dependencies are installed, FALSE otherwise.
+#' @example
+#' deps <- c("climate_assessment==0.1.4a0", "numpy<2.0")
+#' checkPythonDeps(deps, action="stop", checkVersion = TRUE, verbose = TRUE)
 checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE, verbose = FALSE) {
   stopifnot(action %in% c("stop", "warn", "note", "pass"))
   # Keep track of missing dependencies
@@ -239,7 +245,7 @@ checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE,
 
 #' Check Python Dependencies and Versions
 #'
-#' Checks if the required Python dependencies are installed and also if version requirements are met.
+#' Checks if the required Python dependencies are installed and if version requirements are met.
 #'
 #' @param requiredPackages Vector of required packages with optional versions.
 #' @param installedPackages Vector of installed packages with versions.
@@ -247,17 +253,18 @@ checkPythonDeps <- function(dependencies, action = "stop", checkVersion = FALSE,
 #' @return Vector of missing packages.
 checkInstalledPackages <- function(requiredPackages, installedPackages, checkVersion = FALSE) {
   # Extract package names and versions
-  requiredInfos <- purrr::map(requiredPackages, extractPythonPackageAndVersion)
+  requiredInfos <- purrr::map(requiredPackages, extractPythonDependency)
   requiredNames <- purrr::map_chr(requiredInfos, "name")
   requiredVersions <- purrr::map_chr(requiredInfos, "version")
 
-  installedInfos <- purrr::map(installedPackages, extractPythonPackageAndVersion)
+  installedInfos <- purrr::map(installedPackages, extractPythonDependency)
   installedNames <- purrr::map_chr(installedInfos, "name")
   installedVersions <- purrr::map_chr(installedInfos, "version")
 
   # Check if packages are installed and versions match
   if (checkVersion) {
-    missingPackages <- requiredPackages[!(requiredNames %in% installedNames & purrr::map2_lgl(requiredVersions, installedVersions, comparePythonVersions) == 0)]
+    missingPackages <- requiredPackages[!(
+      requiredNames %in% installedNames & purrr::map2_lgl(requiredVersions, installedVersions, comparePythonVersions) == 0)]
   } else {
     missingPackages <- requiredPackages[!(requiredNames %in% installedNames)]
   }
