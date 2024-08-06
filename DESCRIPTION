@@ -5,6 +5,7 @@ Version: 0.5.3
 Date: 2024-06-05
 Authors@R:
     person("Pascal", "Sauer", , "pascal.sauer@pik-potsdam.de", role = c("aut", "cre"))
+    person("Tonn", "Rüter", , "tonn.rueter@pik-potsdam.de", role = c("aut"))
 Description: Enables easier management of package environments, based on renv and Python venv.
 License: LGPL-3
 URL: https://github.com/pik-piam/piamenv
