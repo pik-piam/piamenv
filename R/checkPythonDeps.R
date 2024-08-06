@@ -209,8 +209,10 @@ extractPythonDependency <- function(depString, style = "pip") {
 #' @example
 #' deps <- c("climate_assessment==0.1.4a0", "numpy<2.0")
 #' checkPythonDeps(deps, action="stop", strict = TRUE)
-checkPythonDeps <- function(dependencies, action = "stop", strict = FALSE) {
-  stopifnot(action %in% c("stop", "warn", "note", "pass"))
+checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
+  if (!action %in% c("stop", "warn", "note", "pass")) {
+    stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
+  }
   # Keep track of missing dependencies
   missingDependencies <- c()
   for (dependencyString in dependencies) {
@@ -230,19 +232,28 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = FALSE) {
         }
       },
       error = function(e) {
-        missingDependencies <<- c(missingDependencies, dependencyString)
+        missingDependencies <<- c(missingDependencies, paste0(dependencyString, " (missing) "))
       }
     )
   }
   # Error handling when dependencies are missing
-  if (length(missingDependencies) > 0 && action == "stop") {
-    stop("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
-  } else if (length(missingDependencies) > 0 && action == "warn") {
-    warning("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
-    return(invisible(FALSE))
-  } else if (length(missingDependencies) > 0 && action == "note") {
-    message("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
-    return(invisible(FALSE))
+  if (length(missingDependencies) > 0) {
+    switch(action,
+      "stop" = {
+        stop("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
+      },
+      "warn" = {
+        warning("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
+        return(invisible(FALSE))
+      },
+      "note" = {
+        message("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
+        return(invisible(FALSE))
+      },
+      "pass" = {
+        return(invisible(FALSE))
+      }
+    )
   } else {
     return(invisible(TRUE))
   }
