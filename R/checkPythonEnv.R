@@ -5,8 +5,8 @@
 #' @param path Optional. Fully qualified path to the Python environment
 #'
 #' @author Tonn Rüter
-#' @export
 #' @importFrom reticulate use_condaenv use_virtualenv use_python py_discover_config
+#' @export
 checkPythonEnv <- function(path) {
   # Check if the directory exists
   if (!dir.exists(path)) {

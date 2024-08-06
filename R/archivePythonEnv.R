@@ -9,9 +9,9 @@
 #'  RETICULATE_PYTHON environment variable is used
 #'
 #' @author Mika Pflüger, Tonn Rüter
-#' @export
 #' @importFrom reticulate py_config
 #' @importFrom yaml as.yaml load
+#' @export
 archivePythonEnv <- function(outputDir, pythonConfig = reticulate::py_config()) {
   if (!dir.exists(outputDir)) {
     stop("Provided path '", outputDir, "' does not exist.")
