@@ -3,9 +3,9 @@ Package: piamenv
 Title: Package environment support for PIAM
 Version: 0.5.3
 Date: 2024-06-05
-Authors@R:
+Authors@R: c(
     person("Pascal", "Sauer", , "pascal.sauer@pik-potsdam.de", role = c("aut", "cre")),
-    person("Tonn", "Rüter", , "tonn.rueter@pik-potsdam.de", role = c("aut"))
+    person("Tonn", "Rüter", , "tonn.rueter@pik-potsdam.de", role = c("aut")))
 Description: Enables easier management of package environments, based on renv and Python venv.
 License: LGPL-3
 URL: https://github.com/pik-piam/piamenv
@@ -22,4 +22,4 @@ Suggests:
     covr,
     testthat
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
