@@ -2,14 +2,11 @@
 #'
 #' Verify the availability of REMIND's Python dependencies on the host system. Exposes two functions:
 #' \code{checkPythonRequirements} and \code{checkPythonDeps}. While \code{checkPythonRequirements} reads a pip-style
-#' requirements file and compares the required packages with the installed ones, \code{checkPythonDeps} checks if the 
+#' requirements file and compares the required packages with the installed ones, \code{checkPythonDeps} checks if the
 #' required Python dependencies can actually be imported in the Python environment provided.
 #'
 #' @author Tonn Rüter
-#' @importFrom reticulate import py_list_packages
-#' @importFrom stringr regex str_match
-#' @importFrom purrr map map_chr pmap
-#'
+
 # ---------------------
 # Utility Functions
 # ---------------------
@@ -23,7 +20,10 @@
 #' @param patch Patch version number
 #' @param releaseType Release type (e.g. alpha, beta, rc)
 #' @param releaseVersion Release version number
-#' @return A named list representing a Python version string 
+#' @return A named list representing a Python version string
+#' @importFrom reticulate import py_list_packages
+#' @importFrom stringr regex str_match
+#' @importFrom purrr map map_chr pmap
 createPythonVersion <- function(major = "", minor = "", patch = "", releaseType = "", releaseVersion = "") {
   # Store the components in a named list
   return(list(
@@ -209,7 +209,8 @@ extractPythonDependency <- function(depString, style = "pip") {
 #' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass"
 #' @param strict Logical indicating whether to check for matching versions
 #' @return TRUE if all dependencies are installed, FALSE otherwise
-#' @example \dontrun{
+#' @examples
+#' \dontrun{
 #' deps <- c("climate_assessment==0.1.4a0", "numpy<2.0")
 #' checkPythonDeps(deps, action="stop", strict = TRUE)
 #' }
@@ -236,7 +237,8 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
         }
       },
       error = function(e) {
-        missingDependencies <<- c(missingDependencies, paste0(dependencyString, " (missing) "))
+        # Need to use <<- here to assign to the variable in the parent environment
+        missingDependencies <<- c(missingDependencies, paste0(dependencyString, " (missing) ")) # nolint
       }
     )
   }
@@ -265,7 +267,7 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
 
 #' Check Python Dependencies and Versions
 #'
-#' Compares requirements given in a pip-style file with the installed Python packages. Optionally check if versions are 
+#' Compares requirements given in a pip-style file with the installed Python packages. Optionally check if versions are
 #' met.
 #'
 #' @param requirementsFile Path to a file containing the Python requirements. pip-style requirements are expected

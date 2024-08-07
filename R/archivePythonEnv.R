@@ -18,12 +18,11 @@ archivePythonEnv <- function(outputDir, pythonConfig = reticulate::py_config()) 
   }
   dateAndTime <- format(Sys.time(), "%y%m%d_%H%M%S")
   # Get the path to the Python executable
-  # pythonBinPath <- normalizePath(if (is.null(pythonConfig)) Sys.getenv("RETICULATE_PYTHON") else pythonConfig$python)
   # Check if (ana)conda, venv or system Python is used
   if (any(as.logical(c(pythonConfig$conda, pythonConfig$anaconda)))) {
     envType <- "conda"
     logFile <- file.path(outputDir, paste0("log_pyenv_", dateAndTime, "_", envType, ".txt"))
-    # First run the standard conda command to create an environment file it is yaml formatted, which is nice cause 
+    # First run the standard conda command to create an environment file it is yaml formatted, which is nice 'cause
     # we possibly need to manipulate it later ..
     condaEnv <- yaml.load(system2("conda", args = c("env", "export"), stdout = TRUE))
     # .. in case some packages are installed via pip, we need to replace them with the actual pip freeze output
@@ -33,7 +32,7 @@ archivePythonEnv <- function(outputDir, pythonConfig = reticulate::py_config()) 
     # a open issue with conda: https://github.com/conda/conda/issues/10320
     # Let's start by checking whether there are any pip dependencies in the first place. Conda file contain those in
     # a dedicated section called "pip". If there are none, we can skip this step.
-    pipIdx <- head(which(sapply(condaEnv$dependencies, function(x) "pip" %in% names(x))), 1)
+    pipIdx <- head(which(vapply(condaEnv$dependencies, function(x) "pip" %in% names(x), FUN.VALUE = logical(1))), 1)
     # This vector should not contain more than one element. If there'd be more than one element, there's something
     # wrong with the conda environment file. Don't fail explicitly here, just disregard other pip dependencies except
     # the first one.
