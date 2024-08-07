@@ -24,6 +24,7 @@
 #' @importFrom reticulate import py_list_packages
 #' @importFrom stringr regex str_match
 #' @importFrom purrr map map_chr pmap
+#' @importFrom utils strcapture
 createPythonVersion <- function(major = "", minor = "", patch = "", releaseType = "", releaseVersion = "") {
   # Store the components in a named list
   return(list(
@@ -214,6 +215,7 @@ extractPythonDependency <- function(depString, style = "pip") {
 #' deps <- c("climate_assessment==0.1.4a0", "numpy<2.0")
 #' checkPythonDeps(deps, action="stop", strict = TRUE)
 #' }
+#' @export
 checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
   if (!action %in% c("stop", "warn", "note", "pass")) {
     stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
@@ -275,6 +277,7 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
 #' @param action Action if a dependency or version is missing or mismatched. Either "stop", "warn", "note", or "pass"
 #' @param strict Logical indicating whether to check for strict version matching. Default is TRUE
 #' @return Vector of missing packages.
+#' @export
 checkPythonRequirements <- function(requirementsFile, installed = py_list_packages(), action = "stop", strict = TRUE) {
   # Sanity checks for file ...
   if (!file.exists(requirementsFile)) {

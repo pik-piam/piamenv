@@ -11,6 +11,7 @@
 #' @author Mika Pflüger, Tonn Rüter
 #' @importFrom reticulate py_config
 #' @importFrom yaml as.yaml yaml.load
+#' @importFrom utils head
 #' @export
 archivePythonEnv <- function(outputDir, pythonConfig = reticulate::py_config()) {
   if (!dir.exists(outputDir)) {
