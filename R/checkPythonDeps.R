@@ -9,7 +9,7 @@
 #' @importFrom reticulate import py_list_packages
 #' @importFrom stringr regex str_match
 #' @importFrom purrr map map_chr pmap
-
+#'
 # ---------------------
 # Utility Functions
 # ---------------------
@@ -209,9 +209,10 @@ extractPythonDependency <- function(depString, style = "pip") {
 #' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass"
 #' @param strict Logical indicating whether to check for matching versions
 #' @return TRUE if all dependencies are installed, FALSE otherwise
-#' @example
+#' @example \dontrun{
 #' deps <- c("climate_assessment==0.1.4a0", "numpy<2.0")
 #' checkPythonDeps(deps, action="stop", strict = TRUE)
+#' }
 checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
   if (!action %in% c("stop", "warn", "note", "pass")) {
     stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
