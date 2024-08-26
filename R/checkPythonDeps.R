@@ -43,13 +43,23 @@ createPythonVersion <- function(major = "", minor = "", patch = "", releaseType 
 #' @param pythonVerion A named list representing the Python version.
 #' @return A string representation of the Python version.
 printPythonVersion <- function(pythonVerion) {
-  return(paste0(
-    ifelse(is.na(pythonVerion$major), "", as.character(pythonVerion$major)),
-    ifelse(is.na(pythonVerion$minor), "", paste0(".", as.character(pythonVerion$minor))),
-    ifelse(is.na(pythonVerion$patch), "", paste0(".", as.character(pythonVerion$patch))),
-    ifelse(is.na(pythonVerion$releaseType), "", pythonVerion$releaseType),
-    ifelse(is.na(pythonVerion$releaseVersion), "", pythonVerion$releaseVersion)
-  ))
+  versionString <- ""
+  if (!is.na(pythonVerion$major)) {
+     versionString <- paste0(versionString, as.character(pythonVerion$major))
+  }
+  if (!is.na(pythonVerion$minor)) {
+    versionString <- paste0(versionString, ".", as.character(pythonVerion$minor))
+  }
+  if (!is.na(pythonVerion$patch)) {
+    versionString <- paste0(versionString, ".", as.character(pythonVerion$patch))
+  }
+  if (!is.na(pythonVerion$releaseType)) {
+    versionString <- paste0(versionString, pythonVerion$releaseType)
+  }
+  if (!is.na(pythonVerion$releaseVersion)) {
+    versionString <- paste0(versionString, pythonVerion$releaseVersion)
+  }
+  return(versionString)
 }
 
 #' Extract Python Version
@@ -217,54 +227,55 @@ extractPythonDependency <- function(depString, style = "pip") {
 #' }
 #' @export
 checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
-  if (!action %in% c("stop", "warn", "note", "pass")) {
-    stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
-  }
   # Keep track of missing dependencies
-  missingDependencies <- c()
+  faultyDependencies <- NULL
   for (dependencyString in dependencies) {
     dependency <- extractPythonDependency(dependencyString)
-    tryCatch(
+    # Import Python packages one by one and keep track of missing dependencies or incorrect versions by adding them
+    # to the faultyDependencies vector
+    faultyDependencies <- c(faultyDependencies, tryCatch(
       {
-        pythonModule <- import(dependency$name)
+        # Be adivsed: The tryCatch block heavily relies on implicit return values. SO post for more information:
+        # https://stackoverflow.com/a/12195574/4453999
+        # Basically, the last line of the expression provided to the tryCatch statement gets returned. To highlight this 
+        # *feature* of R, the following else-statements explicitly state NULL values. Note: Using return() here results
+        # in returning from checkPythonDeps alltogether. That was definetly a choice ...
+        pythonModule <- reticulate::import(dependency$name)
         if (strict) {
           installedVersion <- extractPythonVersion(pythonModule$`__version__`)
           correctVersion <- comparePythonVersions(dependency$operator, installedVersion, dependency$version)
           if (!correctVersion) {
-            missingDependencies <- c(
-              missingDependencies,
-              paste0(dependencyString, " (found version: ", printPythonVersion(installedVersion), ")")
-            )
+            # Make sure last statement in the expression is a single item vector containing the error message with the
+            # missmatching version
+            c(paste0(dependencyString, " (found version: ", printPythonVersion(installedVersion), ")"))
+          } else {
+            # Make sure last statement in the expression is NULL so nothing is added to the faultyDependencies vector
+            NULL
           }
+        } else {
+          # As above
+          NULL
         }
       },
       error = function(e) {
-        # Need to use <<- here to assign to the variable in the parent environment
-        missingDependencies <<- c(missingDependencies, paste0(dependencyString, " (missing) ")) # nolint
+        # As above, but this time the error message contains the missing dependency
+        c(paste(dependencyString, "(missing)"))
       }
-    )
+    ))
   }
-  # Error handling when dependencies are missing
-  if (length(missingDependencies) > 0) {
+  # Error case: faultyDependencies handling when dependencies are missing/don't match the required version
+  if (length(faultyDependencies) > 0) {
+    errorMsg <- paste0("Python environment contains faulty dependencies: ", paste(faultyDependencies, collapse = ", "))
     switch(action,
-      "stop" = {
-        stop("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
-      },
-      "warn" = {
-        warning("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
-        return(invisible(FALSE))
-      },
-      "note" = {
-        message("Python dependencies not satisfied: ", paste(missingDependencies, collapse = ", "))
-        return(invisible(FALSE))
-      },
-      "pass" = {
-        return(invisible(FALSE))
-      }
+      "stop" = stop(errorMsg),
+      "warn" = warning(errorMsg),
+      "note" = message(errorMsg),
+      "pass" = {},
+      stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
     )
-  } else {
-    return(invisible(TRUE))
+    return(invisible(FALSE))
   }
+  return(invisible(TRUE))
 }
 
 #' Check Python Dependencies and Versions
@@ -279,13 +290,9 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
 #' @return Vector of missing packages.
 #' @export
 checkPythonRequirements <- function(requirementsFile, installed = py_list_packages(), action = "stop", strict = TRUE) {
-  # Sanity checks for file ...
+  # Sanity checks for file
   if (!file.exists(requirementsFile)) {
     stop("Requirements file '", requirementsFile, "' does not exist.")
-  }
-  # ... and action
-  if (!action %in% c("stop", "warn", "note", "pass")) {
-    stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
   }
   # Read the requirements file
   requirements <- readLines(requirementsFile)
@@ -316,35 +323,21 @@ checkPythonRequirements <- function(requirementsFile, installed = py_list_packag
     nomatch <- rep(TRUE, length(requiredPackages))
   }
   # Error handling when dependencies are missing or versions mismatch
-  switch(action,
-    "stop" = {
-      if (any(missing)) {
-        stop("Missing dependencies: ", paste(requirements[missing], collapse = ", "))
-      }
-      if (any(!nomatch)) {
-        stop("Version mismatch: ", paste(requirements[!nomatch], collapse = ", "))
-      }
-    },
-    "warn" = {
-      if (any(missing)) {
-        warning("Missing dependencies: ", paste(requirements[missing], collapse = ", "))
-      }
-      if (any(!nomatch)) {
-        warning("Version mismatch: ", paste(requirements[!nomatch], collapse = ", "))
-      }
-      return(invisible(FALSE))
-    },
-    "note" = {
-      if (any(missing)) {
-        message("Missing dependencies: ", paste(requirements[missing], collapse = ", "))
-      }
-      if (any(!nomatch)) {
-        message("Version mismatch: ", paste(requirements[!nomatch], collapse = ", "))
-      }
-      return(invisible(FALSE))
-    },
-    "pass" = {
-      return(invisible(TRUE))
-    }
-  )
+  errorMsg <- character()
+  if (any(missing)) {
+    errorMsg <- paste0(errorMsg, "Missing dependencies: ", paste(requiredPackages[missing], collapse = ", "), "\n")
+  }
+  if (any(!nomatch)) {
+    errorMsg <- paste0(errorMsg, "Version mismatch: ", paste(requirements[!nomatch], collapse = ", "), "\n")
+  }
+  if (length(errorMsg) > 0) {
+    switch(action,
+      "stop" = stop(errorMsg),
+      "warn" = warning(errorMsg),
+      "note" = message(errorMsg),
+      "pass" = return(invisible(FALSE)),
+      stop("Invalid action '", action, "'. Must be one of 'stop', 'warn', 'note' or 'pass'.")
+    )
+  }
+  return(invisible(TRUE))
 }
