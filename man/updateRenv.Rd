@@ -4,7 +4,10 @@
 \alias{updateRenv}
 \title{updateRenv}
 \usage{
-updateRenv()
+updateRenv(exclude = NULL)
+}
+\arguments{
+\item{exclude}{vector of packages not to be updated}
 }
 \value{
 Invisibly, the return value of renv::update.
