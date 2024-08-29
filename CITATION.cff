@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'piamenv: Package environment support for PIAM'
-version: 0.5.3
-date-released: '2024-06-05'
+version: 0.5.4
+date-released: '2024-08-29'
 abstract: Enables easier management of package environments, based on renv and Python
   venv.
 authors:
