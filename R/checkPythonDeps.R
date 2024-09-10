@@ -78,7 +78,7 @@ extractPythonVersion <- function(versionString) {
     (?<minor>[0-9]+)?\\.? # Minor version
     (?<patch>[0-9]+)?     # Patch version
     [-_\\.]?              # Possible separator
-    (?<rtype>alpha|a|beta|b|preview|pre|c|rc)? # Release type
+    (?<rtype>alpha|a|beta|b|preview|pre|c|rc|post)? # Release type
     [-_\\.]?             # Possible separator
     (?<rnum>[0-9]+)?     # Release number
     ", comments = TRUE)
