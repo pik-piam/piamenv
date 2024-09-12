@@ -153,6 +153,16 @@ createPythonDependency <- function(name = "", operator = "", version = createPyt
   ))
 }
 
+#' Python dependency string with repository information
+#'
+#' This function creates a string representation of a Python dependency with repository information
+#'
+#' @param dependency Named list representation of the dependency
+repoString <- function(dependency) {
+  repoInfo <- c(dependency$repo, dependency$build)
+  return(paste(repoInfo[repoInfo != ""], collapse = "@"))
+}
+
 #' Extract Python dependency from dependency string
 #'
 #' This function extracts the package name, relationship operator and version from a typical Python dependency string
@@ -173,11 +183,11 @@ extractPythonDependency <- function(depString, style = "pip") {
     splitDepString <- strcapture(pattern, depString, proto = list(name = "", operator = "", repo = ""))
     splitRepoString <- strsplit(splitDepString$repo, "@")[[1]]
     return(createPythonDependency(
-      splitDepString[1],
-      " @ ",
-      createPythonVersion(),
-      build = splitRepoString[2],
-      repo = splitRepoString[1]
+      name     = splitDepString$name,
+      operator = " @ ",
+      version  = createPythonVersion(),
+      build    = if (!is.na(splitRepoString[2])) splitRepoString[2] else "",
+      repo     = splitRepoString[1]
     ))
   } else if (style == "conda") {
     # Example: "pip=24.0=pyhd8ed1ab_0" -> Split at "=", first part is dependency name, second part is version,
@@ -185,22 +195,22 @@ extractPythonDependency <- function(depString, style = "pip") {
     splitDepString <- strsplit(depString, "=")[[1]]
     extractPythonVersion(splitDepString[2])
     return(createPythonDependency(
-      splitDepString[1],
-      "==",
-      extractPythonVersion(splitDepString[2]),
-      build = splitDepString[3],
-      repo = ""
+      name     = splitDepString[1],
+      operator = "==",
+      version  = extractPythonVersion(splitDepString[2]),
+      build    = splitDepString[3],
+      repo     = ""
     ))
   } else if (style == "pip") {
     # Example: "climate_assessment==0.1.4a0" -> Split at "==", first part is dependency name, second part is version
     pattern <- "(.*)(==|>=|<=|>|<|!=)(.*)"
     splitDepString <- strcapture(pattern, depString, proto = list(name = "", operator = "", version = ""))
     return(createPythonDependency(
-      splitDepString$name,
-      splitDepString$operator,
-      extractPythonVersion(splitDepString$version),
-      build = "",
-      repo = ""
+      name     = splitDepString$name,
+      operator = splitDepString$operator,
+      version  = extractPythonVersion(splitDepString$version),
+      build    = "",
+      repo     = ""
     ))
   } else {
     stop("Invalid argument: 'style' should be either 'pip' or 'conda'")
@@ -231,17 +241,25 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
   faultyDependencies <- NULL
   for (dependencyString in dependencies) {
     dependency <- extractPythonDependency(dependencyString)
+    # Note: Modules installed from a particular repository/fork/commit carry a version, however this version is
+    # meaningless in acertaining if the correct built of the module is installed. Hence, we skip the version check in
+    # this case even in strict mode and instead issue a warning
+    if (strict && dependency$repo != "") {
+      warning(
+        "Cannot verify version of '", dependency$name, "': Make sure module was installed from ", repoString(dependency)
+      )
+    }
     # Import Python packages one by one and keep track of missing dependencies or incorrect versions by adding them
     # to the faultyDependencies vector
     faultyDependencies <- c(faultyDependencies, tryCatch(
       {
         # Be adivsed: The tryCatch block heavily relies on implicit return values. SO post for more information:
         # https://stackoverflow.com/a/12195574/4453999
-        # Basically, the last line of the expression provided to the tryCatch statement gets returned. To highlight this 
+        # Basically, the last line of the expression provided to the tryCatch statement gets returned. To highlight this
         # *feature* of R, the following else-statements explicitly state NULL values. Note: Using return() here results
         # in returning from checkPythonDeps alltogether. That was definetly a choice ...
         pythonModule <- reticulate::import(dependency$name)
-        if (strict) {
+        if (strict && dependency$repo == "") {
           installedVersion <- extractPythonVersion(pythonModule$`__version__`)
           correctVersion <- comparePythonVersions(dependency$operator, installedVersion, dependency$version)
           if (!correctVersion) {
