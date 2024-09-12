@@ -2,15 +2,15 @@
 % Please edit documentation in R/archivePythonEnv.R
 \name{archivePythonEnv}
 \alias{archivePythonEnv}
-\title{writePythonVirtualEnvLockFile}
+\title{archivePythonEnv}
 \usage{
 archivePythonEnv(outputDir, pythonConfig = reticulate::py_config())
 }
 \arguments{
 \item{outputDir}{Path to the directory where the lock file will be written}
 
-\item{pythonConfig}{as produced by \code{\link{checkPythonEnv}}. Defaults to NULL. If not provided, the
-RETICULATE_PYTHON environment variable is used}
+\item{pythonConfig}{as produced by \code{\link{checkPythonEnv}}. If not provided, the RETICULATE_PYTHON environment 
+variable is used}
 }
 \description{
 Write Python virtual environment lock file specifying package versions currently installed in the given
