@@ -25,6 +25,6 @@ revertDevelopmentVersions <- function() {
               }))
 
   if (length(x)) {
-    invisible(renv::install(paste(names(x), x, sep = "@"), prompt = FALSE))
+    invisible(renv::install(paste(names(x), x, sep = "@"), type = getOption("pkgType"), prompt = FALSE))
   }
 }
