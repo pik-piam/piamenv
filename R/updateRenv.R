@@ -10,7 +10,9 @@ updateRenv <- function(exclude = NULL) {
   stopifnot(`No renv active. Try starting the R session in the project root.` = !is.null(renv::project()))
 
   installedPiamPackages <- intersect(utils::installed.packages()[, "Package"], piamPackages())
-  installedUpdates <- renv::update(setdiff(installedPiamPackages, exclude), prompt = FALSE)
+  installedUpdates <- renv::update(setdiff(installedPiamPackages, exclude),
+                                   type = getOption("pkgType"),
+                                   prompt = FALSE)
 
   archiveRenv()
   return(invisible(installedUpdates))

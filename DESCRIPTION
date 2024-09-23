@@ -1,7 +1,7 @@
 Type: Package
 Package: piamenv
 Title: Package environment support for PIAM
-Version: 0.5.4
+Version: 0.5.4.9001
 Date: 2024-08-29
 Authors@R:
     person("Pascal", "Sauer", , "pascal.sauer@pik-potsdam.de", role = c("aut", "cre"))
@@ -11,7 +11,7 @@ URL: https://github.com/pik-piam/piamenv
 Imports:
     desc,
     methods,
-    renv,
+    renv (>= 1.0.8),
     withr
 Suggests:
     covr,
