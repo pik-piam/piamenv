@@ -11,6 +11,23 @@
 # Utility Functions
 # ---------------------
 
+#' Read Python Requirements
+#'
+#' This function reads a pip-style requirements file and returns a sorted vector of dependencies.
+#'
+#' @param path Path to the requirements file
+#' @return A sorted vector of dependencies
+readPythonRequirements <- function(path) {
+  # Check if the file exists
+  if (!file.exists(path)) {
+    stop(paste0("File not found: '", path, "'"))
+  }
+  # Read the file line by line and remove leading and trailing whitespace
+  lines <- trimws(readLines(path))
+  # Remove empty lines and lines starting with, sort dependencies alphabetically
+  return(sort(lines[nzchar(lines) & !startsWith(lines, "#")]))
+}
+
 #' Create Python Version
 #'
 #' This function creates a named list representing a Python version string from its components.
@@ -226,7 +243,7 @@ extractPythonDependency <- function(depString, style = "pip") {
 #' Checks if the required Python dependencies can actually be imported in the Python environment provided. Relies on
 #' reticulate::import. Optionally check if versions are met
 #'
-#' @param dependencies Vector of dependency strings
+#' @param dependencies Vector of dependency strings, e.g. c("numpy==1.26.4", "climate-assessment @ <URL to git repo>")
 #' @param action Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass"
 #' @param strict Logical indicating whether to check for matching versions
 #' @return TRUE if all dependencies are installed, FALSE otherwise
@@ -312,10 +329,7 @@ checkPythonRequirements <- function(requirementsFile, installed = py_list_packag
   if (!file.exists(requirementsFile)) {
     stop("Requirements file '", requirementsFile, "' does not exist.")
   }
-  # Read the requirements file
-  requirements <- readLines(requirementsFile)
-  # Filter out empty or whitespace-only strings and sort alphabetically
-  requirements <- sort(requirements[!grepl("^\\s*$", requirements)])
+  requirements <- readPythonRequirements(requirementsFile)
   requiredDependencies <- map(requirements, extractPythonDependency, style = "pip")
   requiredPackages <- map_chr(requiredDependencies, "name")
   # Now check if the required packages are installed ...
