@@ -262,9 +262,9 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
     # meaningless in acertaining if the correct built of the module is installed. Hence, we skip the version check in
     # this case even in strict mode and instead issue a warning
     if (strict && dependency$repo != "") {
-      warning(
+      warning(paste0(
         "Cannot verify version of '", dependency$name, "': Make sure module was installed from ", repoString(dependency)
-      )
+      ))
     }
     # Import Python packages one by one and keep track of missing dependencies or incorrect versions by adding them
     # to the faultyDependencies vector
