@@ -2,7 +2,7 @@
 % Please edit documentation in R/checkPythonDeps.R
 \name{createPythonVersion}
 \alias{createPythonVersion}
-\title{checkPythonDeps.R}
+\title{Create Python Version}
 \usage{
 createPythonVersion(
   major = "",
@@ -27,14 +27,5 @@ createPythonVersion(
 A named list representing a Python version string
 }
 \description{
-Verify the availability of REMIND's Python dependencies on the host system. Exposes two functions:
-\code{checkPythonRequirements} and \code{checkPythonDeps}. While \code{checkPythonRequirements} reads a pip-style
-requirements file and compares the required packages with the installed ones, \code{checkPythonDeps} checks if the
-required Python dependencies can actually be imported in the Python environment provided.
-}
-\author{
-Tonn Rüter
-Create Python Version
-
 This function creates a named list representing a Python version string from its components.
 }

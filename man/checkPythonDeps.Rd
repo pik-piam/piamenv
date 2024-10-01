@@ -7,7 +7,7 @@
 checkPythonDeps(dependencies, action = "stop", strict = TRUE)
 }
 \arguments{
-\item{dependencies}{Vector of dependency strings}
+\item{dependencies}{Vector of dependency strings, e.g. c("numpy==1.26.4", "climate-assessment @ <URL to git repo>")}
 
 \item{action}{Action to take if a dependency is missing. Either "stop", "warn", "note", or "pass"}
 
