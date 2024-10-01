@@ -18,4 +18,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Pascal Sauer \email{pascal.sauer@pik-potsdam.de}
 
+Authors:
+\itemize{
+  \item Tonn Rüter \email{tonn.rueter@pik-potsdam.de}
+}
+
 }
