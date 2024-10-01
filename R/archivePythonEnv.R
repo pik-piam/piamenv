@@ -7,6 +7,7 @@
 #' @param outputDir Path to the directory where the lock file will be written
 #' @param pythonConfig as produced by \code{\link{checkPythonEnv}}. If not provided, the RETICULATE_PYTHON environment 
 #'   variable is used
+#' @return Path to the lock file
 #'
 #' @author Mika Pflüger, Tonn Rüter
 #' @importFrom yaml as.yaml yaml.load
@@ -60,5 +61,5 @@ archivePythonEnv <- function(outputDir, pythonConfig = reticulate::py_config()) 
     mustWork = FALSE
   )
   writeLines(envAsString, logFile)
-  return(invisible(TRUE))
+  return(logFile)
 }
