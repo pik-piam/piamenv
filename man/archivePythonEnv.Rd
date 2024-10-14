@@ -12,6 +12,9 @@ archivePythonEnv(outputDir, pythonConfig = reticulate::py_config())
 \item{pythonConfig}{as produced by \code{\link{checkPythonEnv}}. If not provided, the RETICULATE_PYTHON environment 
 variable is used}
 }
+\value{
+Path to the lock file
+}
 \description{
 Write Python virtual environment lock file specifying package versions currently installed in the given
 virtual environment. Using the lock file, a new virtual environment can be built containing exactly the same
