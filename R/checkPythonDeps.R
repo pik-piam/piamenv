@@ -17,6 +17,7 @@
 #'
 #' @param path Path to the requirements file
 #' @return A sorted vector of dependencies
+#' @export
 readPythonRequirements <- function(path) {
   # Check if the file exists
   if (!file.exists(path)) {
