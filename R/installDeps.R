@@ -12,7 +12,7 @@ installDeps <- function(path) {
   installedPackages <- utils::installed.packages()[, "Package"]
   missingDeps <- setdiff(unique(deps$Package), installedPackages)
   if (length(missingDeps) > 0) {
-    message("Installing missing MAgPIE dependencies ", paste(missingDeps, collapse = ", "))
+    message("Installing missing dependencies ", paste(missingDeps, collapse = ", "))
     renv::install(missingDeps)
   }
 }
