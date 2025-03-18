@@ -13,14 +13,16 @@ archiveRenv <- function() {
   archivePath <- file.path(normalizePath(renv::project()), "renv", "archive", paste0(datetime, "_renv.lock"))
 
   dir.create(dirname(archivePath), recursive = TRUE, showWarnings = FALSE)
-  utils::capture.output({
-    errorMessage <- utils::capture.output({
-      snapshotSuccess <- tryCatch({
+
+  errorMessage <- utils::capture.output(
+    snapshotSuccess <- tryCatch(
+      {
         renv::snapshot(lockfile = archivePath, prompt = FALSE)
         TRUE
-      }, error = function(error) FALSE)
-    }, type = "message")
-  })
+      },
+      error = function(error) FALSE),
+    type = "output")
+
   if (!snapshotSuccess) {
     stop(paste(errorMessage, collapse = "\n"))
   }
