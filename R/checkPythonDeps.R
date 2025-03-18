@@ -132,14 +132,16 @@ comparePythonVersions <- function(operator, first, second, strict = TRUE) {
     v2 <- ifelse(is.na(second[[component]]), -1, second[[component]])
     # Since we're comparing in decreasing order of importance, we can continue if components are equal ..
     if (v1 == v2) next
-    # .. or immediately return the result of the comparison if they are not equal
-    return(switch(operator,
+    # .. or immediately return the result of the comparison if they are not equal. Remove whitespace from operator
+    return(switch(trimws(operator),
       ">=" = v1 >= v2,
       "==" = v1 == v2,
       "<=" = v1 <= v2,
       "!=" = v1 != v2,
       ">" = v1 > v2,
       "<" = v1 < v2,
+      #"@" = TRUE, # Special case for repository dependencies cannot reasonably be compared as packages carry a version
+      # but not their origin/build version
       stop("Invalid operator '", operator, "'. Must be either '==', '!=', '>', '>=', '<' or '<='.")
     ))
   }
@@ -276,11 +278,10 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
         # Basically, the last line of the expression provided to the tryCatch statement gets returned. To highlight this
         # *feature* of R, the following else-statements explicitly state NULL values. Note: Using return() here results
         # in returning from checkPythonDeps alltogether. That was definetly a choice ...
-        pythonModule <- reticulate::import(dependency$name)
+        pythonModule <- reticulate::import(gsub("-", "_", dependency$name))
         if (strict && dependency$repo == "") {
           installedVersion <- extractPythonVersion(pythonModule$`__version__`)
-          correctVersion <- comparePythonVersions(dependency$operator, installedVersion, dependency$version)
-          if (!correctVersion) {
+          if (!comparePythonVersions(dependency$operator, installedVersion, dependency$version)) {
             # Make sure last statement in the expression is a single item vector containing the error message with the
             # missmatching version
             c(paste0(dependencyString, " (found version: ", printPythonVersion(installedVersion), ")"))
@@ -317,7 +318,8 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
 #' Check Python Dependencies and Versions
 #'
 #' Compares requirements given in a pip-style file with the installed Python packages. Optionally check if versions are
-#' met.
+#' met. Note: Dependencies installed from repositories/forks/commits carry a version, however this version is 
+#' meaningless. There is no way to verify if the correct built of the module is installed in strict mode.
 #'
 #' @param requirementsFile Path to a file containing the Python requirements. pip-style requirements are expected
 #' @param installed Python packages installed in the environment. Defaults to reticulate::py_list_packages()
@@ -325,7 +327,8 @@ checkPythonDeps <- function(dependencies, action = "stop", strict = TRUE) {
 #' @param strict Logical indicating whether to check for strict version matching. Default is TRUE
 #' @return Vector of missing packages.
 #' @export
-checkPythonRequirements <- function(requirementsFile, installed = py_list_packages(), action = "stop", strict = TRUE) {
+checkPythonRequirements <- function(requirementsFile, installed = py_list_packages(), action = "stop", strict = TRUE,
+  forceLowerCase = TRUE) {
   # Sanity checks for file
   if (!file.exists(requirementsFile)) {
     stop("Requirements file '", requirementsFile, "' does not exist.")
@@ -333,6 +336,10 @@ checkPythonRequirements <- function(requirementsFile, installed = py_list_packag
   requirements <- readPythonRequirements(requirementsFile)
   requiredDependencies <- map(requirements, extractPythonDependency, style = "pip")
   requiredPackages <- map_chr(requiredDependencies, "name")
+  if (forceLowerCase) {
+    # `reticulate` uses lowercase package names, so we need to convert the required packages to lowercase as well .....
+    requiredPackages <- tolower(requiredPackages)
+  }
   # Now check if the required packages are installed ...
   missing <- !(requiredPackages %in% installed$package)
   present <- installed$package %in% requiredPackages

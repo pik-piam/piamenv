@@ -23,6 +23,7 @@ checkPythonEnv <- function(path, verbose = FALSE) {
         stop("Unable to use conda environment '", path, "'")
       }
     )
+    envType <- "conda"
   } else if (file.exists(file.path(path, "pyvenv.cfg"))) {
     tryCatch(
       {
@@ -33,15 +34,19 @@ checkPythonEnv <- function(path, verbose = FALSE) {
         stop("Unable to use venv environment '", path, "'")
       }
     )
+    envType <- "venv"
   } else if (file.exists(file.path(path, "bin/python")) || file.exists(file.path(path, "python.exe"))) {
     use_python(path)
     if (verbose) {
       message("No virtual Python environment detected. Using Python '", py_discover_config()$python, "'")
       message("WARNING: Using system Python is not recommended.")
     }
+    envType <- "system"
   } else {
     # path likely does not contain a Python environment, try use_python anyway, since it will raise an error
     use_python(path)
   }
-  return(py_discover_config())
+  conf <- py_discover_config()
+  conf$type <- envType
+  return(conf)
 }
