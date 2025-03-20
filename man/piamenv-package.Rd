@@ -6,7 +6,7 @@
 \alias{piamenv-package}
 \title{piamenv: Package environment support for PIAM}
 \description{
-Enables easier management of package environments, based on renv and Python venv.
+Enables easier management of package environments, based on renv and conda.
 }
 \seealso{
 Useful links:
@@ -17,5 +17,10 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Pascal Sauer \email{pascal.sauer@pik-potsdam.de}
+
+Authors:
+\itemize{
+  \item Tonn Rüter \email{tonn.rueter@pik-potsdam.de}
+}
 
 }
