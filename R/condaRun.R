@@ -3,8 +3,9 @@
 #' Run a command in a specified conda environment with given environment variables.
 #'
 #' @param cmd Command to run in the conda environment
+#' @param path Path to the conda environment
 #' @param env Named vector of environment variables to set, i.e., c("VAR0" = "value0", "VAR1" = "value1")
-#' @param callConda Path to the conda environment
+#' @param init List containing `setup` and `teardown` commands to run before and after the command
 #' @param log Path to log file or NULL to use stdout
 #' @param verbose Verbosity level (0 for silent, higher for more verbose).
 #' @return Invisible NULL
