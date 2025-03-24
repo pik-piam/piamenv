@@ -30,7 +30,7 @@ condaInit <- function(how = "", log = NULL, verbose = 0) {
       teardownCmd <- trimws(paste("module unload", currentConda))
     } else {
       stop(paste(
-        "Conda not found, no activation procedure to specified.",
+        "Conda not found, no activation procedure specified.",
         "Please install conda or adapt the condaInit function to your system.",
         paste0("(how = '", how, "')")
       ))
