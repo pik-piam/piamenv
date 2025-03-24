@@ -11,7 +11,7 @@ condaInit <- function(how = "", log = NULL, verbose = 0) {
   # Make sure log is a valid abs path if set. If not set make sure output is redirected to stdout
   log <- if (!is.null(log)) normalizePath(log, mustWork = FALSE) else stdout()
   # We need to redirect stdout and stderr to the log file. This is platform dependent
-  # Note: Redirect operator gott be `&>>` not `>> ... 2&>1`. The latter won't load anaconda for some reason
+  # Note: Redirect operator must be `&>>` not `>> ... 2&>1`. The latter won't load anaconda for some reason
   redirectAndApppend <- if (.Platform$OS.type == "unix") "&>>" else "*>>"
   #
   # Conda Section: Check if conda is available and if not, provide a way to activate it
