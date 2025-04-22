@@ -14,18 +14,8 @@ archiveRenv <- function() {
 
   dir.create(dirname(archivePath), recursive = TRUE, showWarnings = FALSE)
 
-  errorMessage <- utils::capture.output({
-    snapshotSuccess <- tryCatch({
-      renv::snapshot(lockfile = archivePath, prompt = FALSE)
-      TRUE
-    },
-    error = function(error) FALSE)
-  },
-  type = "output")
+  renv::snapshot(lockfile = archivePath, prompt = FALSE)
 
-  if (!snapshotSuccess) {
-    stop(paste(errorMessage, collapse = "\n"))
-  }
   message("Lockfile written to ", archivePath)
   return(invisible(archivePath))
 }
