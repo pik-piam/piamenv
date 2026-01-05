@@ -1,6 +1,6 @@
 # Package environment support for PIAM
 
-R package **piamenv**, version **0.7.2**
+R package **piamenv**, version **0.7.3**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/piamenv)](https://cran.r-project.org/package=piamenv) [![R build status](https://github.com/pik-piam/piamenv/workflows/check/badge.svg)](https://github.com/pik-piam/piamenv/actions) [![codecov](https://codecov.io/gh/pik-piam/piamenv/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/piamenv) [![r-universe](https://pik-piam.r-universe.dev/badges/piamenv)](https://pik-piam.r-universe.dev/builds)
 
@@ -38,7 +38,7 @@ In case of questions / problems please contact Pascal Sauer <pascal.sauer@pik-po
 
 To cite package **piamenv** in publications use:
 
-Sauer P, Rüter T (2025). "piamenv: Package environment support for PIAM." Version: 0.7.2, <https://github.com/pik-piam/piamenv>.
+Sauer P, Rüter T (2026). "piamenv: Package environment support for PIAM." Version: 0.7.3, <https://github.com/pik-piam/piamenv>.
 
 A BibTeX entry for LaTeX users is
 
@@ -46,9 +46,9 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {piamenv: Package environment support for PIAM},
   author = {Pascal Sauer and Tonn Rüter},
-  date = {2025-04-10},
-  year = {2025},
+  date = {2026-01-05},
+  year = {2026},
   url = {https://github.com/pik-piam/piamenv},
-  note = {Version: 0.7.2},
+  note = {Version: 0.7.3},
 }
 ```
