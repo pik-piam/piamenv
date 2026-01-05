@@ -21,7 +21,7 @@ condaInit <- function(how = "", log = NULL, verbose = 0) {
   if (condaBin == "") {
     # Add user specific conda activation procedures in this here if-else-block
     if (how == "pik-cluster") {
-      currentConda <- "anaconda/2024.10"
+      currentConda <- "anaconda/2025"
       setupCmd <- trimws(paste(
         "module load",
         currentConda,
