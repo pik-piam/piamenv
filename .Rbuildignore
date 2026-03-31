@@ -12,3 +12,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.vscode$
+^\.claude$
+^_pkgdown\.yml$
