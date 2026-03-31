@@ -1,0 +1,19 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/archiveRenv.html</loc></url>
+<url><loc>/reference/checkDeps.html</loc></url>
+<url><loc>/reference/condaInit.html</loc></url>
+<url><loc>/reference/condaRun.html</loc></url>
+<url><loc>/reference/fixDeps.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/installDeps.html</loc></url>
+<url><loc>/reference/piamenv-package.html</loc></url>
+<url><loc>/reference/restoreRenv.html</loc></url>
+<url><loc>/reference/revertDevelopmentVersions.html</loc></url>
+<url><loc>/reference/showUpdates.html</loc></url>
+<url><loc>/reference/stopIfLoaded.html</loc></url>
+<url><loc>/reference/updateRenv.html</loc></url>
+</urlset>
+
