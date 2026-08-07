@@ -1,8 +1,8 @@
 Type: Package
 Package: piamenv
 Title: Package environment support for PIAM
-Version: 0.8.0
-Date: 2026-03-31
+Version: 0.8.1
+Date: 2026-08-07
 Authors@R: c(
     person("Pascal", "Sauer", , "pascal.sauer@pik-potsdam.de", role = c("aut", "cre")),
     person("Tonn", "Rüter", , "tonn.rueter@pik-potsdam.de", role = c("aut")))

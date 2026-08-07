@@ -1,8 +1,8 @@
 # Package environment support for PIAM
 
-R package **piamenv**, version **0.8.0**
+R package **piamenv**, version **0.8.1**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/piamenv)](https://cran.r-project.org/package=piamenv) [![R build status](https://github.com/pik-piam/piamenv/workflows/check/badge.svg)](https://github.com/pik-piam/piamenv/actions) [![codecov](https://codecov.io/gh/pik-piam/piamenv/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/piamenv) [![r-universe](https://pik-piam.r-universe.dev/badges/piamenv)](https://pik-piam.r-universe.dev/builds)
+   [![R build status](https://github.com/pik-piam/piamenv/workflows/check/badge.svg)](https://github.com/pik-piam/piamenv/actions) [![codecov](https://codecov.io/gh/pik-piam/piamenv/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/piamenv) [![r-universe](https://pik-piam.r-universe.dev/badges/piamenv)](https://pik-piam.r-universe.dev/builds)
 
 ## Purpose and Functionality
 
@@ -20,13 +20,13 @@ The additional repository can be made available permanently by adding the line a
 
 After that the most recent version of the package can be installed using `install.packages`:
 
-```r 
+```r
 install.packages("piamenv")
 ```
 
 Package updates can be installed using `update.packages` (make sure that the additional repository has been added before running that command):
 
-```r 
+```r
 update.packages()
 ```
 
@@ -38,7 +38,7 @@ In case of questions / problems please contact Pascal Sauer <pascal.sauer@pik-po
 
 To cite package **piamenv** in publications use:
 
-Sauer P, Rüter T (2026). "piamenv: Package environment support for PIAM." Version: 0.8.0, <https://github.com/pik-piam/piamenv>.
+Sauer P, Rüter T (2026). "piamenv: Package environment support for PIAM." Version: 0.8.1, <https://github.com/pik-piam/piamenv>.
 
 A BibTeX entry for LaTeX users is
 
@@ -46,9 +46,9 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {piamenv: Package environment support for PIAM},
   author = {Pascal Sauer and Tonn Rüter},
-  date = {2026-03-31},
+  date = {2026-08-07},
   year = {2026},
   url = {https://github.com/pik-piam/piamenv},
-  note = {Version: 0.8.0},
+  note = {Version: 0.8.1},
 }
 ```
