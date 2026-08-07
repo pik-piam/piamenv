@@ -23,8 +23,11 @@ condaRun <- function(cmd, path, env = c(), init = list(setup = "", teardown = ""
   # Filter out empty strings, and collapse into a single command string
   condaRunCmd <- paste(
     Filter(nzchar, c(
-      "conda run -p", path,
+      "conda",
+      # Use -v as a global option to precede the `run` subcommand as it works for both conda and micromamba as
+      # micromamba's `run` does not accept a trailing -v options
       if (verbose > 0) paste0("-", strrep("v", verbose)) else "",
+      "run -p", path,
       cmd,
       if (log != stdout()) paste(redirectAndApppend, log) else ""
     )),
