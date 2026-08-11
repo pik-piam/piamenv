@@ -3,6 +3,7 @@
 export(archiveRenv)
 export(checkDeps)
 export(condaInit)
+export(condaPackageVersion)
 export(condaRun)
 export(fixDeps)
 export(installDeps)

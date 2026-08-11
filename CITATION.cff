@@ -3,7 +3,7 @@ message: If you use this software, please cite it using the metadata from this f
 type: software
 title: 'piamenv: Package environment support for PIAM'
 version: 0.8.1
-date-released: '2026-08-07'
+date-released: '2026-08-11'
 abstract: Enables easier management of package environments, based on renv and conda.
 authors:
 - family-names: Sauer

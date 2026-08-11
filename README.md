@@ -46,7 +46,7 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {piamenv: Package environment support for PIAM},
   author = {Pascal Sauer and Tonn Rüter},
-  date = {2026-08-07},
+  date = {2026-08-11},
   year = {2026},
   url = {https://github.com/pik-piam/piamenv},
   note = {Version: 0.8.1},
