@@ -23,8 +23,11 @@ condaRun <- function(cmd, path, env = c(), init = list(setup = "", teardown = ""
   # Filter out empty strings, and collapse into a single command string
   condaRunCmd <- paste(
     Filter(nzchar, c(
-      "conda run -p", path,
+      "conda",
+      # Use -v as a global option to precede the `run` subcommand as it works for both conda and micromamba as
+      # micromamba's `run` does not accept a trailing -v options
       if (verbose > 0) paste0("-", strrep("v", verbose)) else "",
+      "run -p", path,
       cmd,
       if (log != stdout()) paste(redirectAndApppend, log) else ""
     )),
@@ -49,13 +52,17 @@ condaRun <- function(cmd, path, env = c(), init = list(setup = "", teardown = ""
   if (verbose > 0) {
     cat(paste0(date(), " condaRun -- About to run\n", callConda, "\n"), file = log, append = TRUE)
   }
-  # Run the command in a new environment
-  withr::with_envvar(
+  # Run the command in a new environment. `system` does not error on failure, so capture the
+  # exit code and abort on non-zero, ensuring failures propagate to the calling process.
+  status <- withr::with_envvar(
     env,
     {
       system(callConda)
     },
     action = "replace"
   )
+  if (status != 0) {
+    stop("condaRun -- command failed with exit code ", status, ":\n", callConda)
+  }
   invisible(NULL)
 }
