@@ -5,6 +5,8 @@
 - [`archiveRenv()`](archiveRenv.md) : archiveRenv
 - [`checkDeps()`](checkDeps.md) : Check Dependencies
 - [`condaInit()`](condaInit.md) : condaInit
+- [`condaPackageVersion()`](condaPackageVersion.md) :
+  condaPackageVersion
 - [`condaRun()`](condaRun.md) : condaRun
 - [`fixDeps()`](fixDeps.md) : Fix Dependencies
 - [`installDeps()`](installDeps.md) : installDeps
